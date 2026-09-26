@@ -170,7 +170,7 @@ function getRisk(score, max) {
 }
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
-function Logo({ size = 20 }) {
+function Logo({ size = 25 }) {
   return (
     <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: size, letterSpacing: "-0.02em", userSelect: "none" }}>
       <span style={{ color: B.ink }}>Data</span><span style={{ color: B.turmeric }}>Sattva</span>
