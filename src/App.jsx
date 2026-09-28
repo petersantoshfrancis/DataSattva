@@ -496,7 +496,7 @@ export default function DataSattva() {
           {/* Lead capture */}
         {!submitted ? (
  <form 
-  action="https://formspree.io/f/mzezklја" 
+  action="https://formspree.io/f/mzezklja" 
   method="POST"
     style={{ background: B.ink, borderRadius: 16, padding: 28 }}>
     
