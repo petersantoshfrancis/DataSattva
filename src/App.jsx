@@ -494,36 +494,49 @@ export default function DataSattva() {
           )}
 
           {/* Lead capture */}
-          {!submitted ? (
-            <div style={{ background: B.ink, borderRadius: 16, padding: 28 }}>
-              <div style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 22, color: B.white, marginBottom: 8, textAlign: "center" }}>
-                Get your remediation roadmap
-              </div>
-              <div style={{ fontSize: 14, color: "#A8A29E", textAlign: "center", marginBottom: 24, lineHeight: 1.6 }}>
-                A DataSattva expert will review your results and provide a personalised action plan — at no charge.
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                {[
-                  { key: "name",  placeholder: "Your name",         type: "text"  },
-                  { key: "org",   placeholder: "Organisation",       type: "text"  },
-                  { key: "email", placeholder: "Business email",     type: "email" },
-                  { key: "phone", placeholder: "Phone / WhatsApp",   type: "tel"   },
-                ].map(f => (
-                  <input key={f.key} type={f.type} placeholder={f.placeholder}
-                    value={lead[f.key]} onChange={e => setLead(p => ({ ...p, [f.key]: e.target.value }))}
-                    style={{ padding: "12px 14px", borderRadius: 8, border: "1px solid #3A3530", background: "#2A2520", color: B.white, fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif" }} />
-                ))}
-              </div>
-              <button
-                disabled={!lead.name || !lead.org || !lead.email}
-                onClick={() => setSubmitted(true)}
-                style={{ width: "100%", background: lead.name && lead.org && lead.email ? B.turmeric : "#3A3530", color: B.white, border: "none", borderRadius: 8, padding: 14, fontWeight: 600, fontSize: 15, cursor: lead.name && lead.org && lead.email ? "pointer" : "default", fontFamily: "Inter, sans-serif" }}>
-                Send me my roadmap
-              </button>
-              <div style={{ fontSize: 12, color: "#6B6560", textAlign: "center", marginTop: 10 }}>
-                No spam. Expert callback within one business day. · datasattva.com
-              </div>
-            </div>
+        {!submitted ? (
+  <form 
+    action="https://formspree.io/f/mzezklја" 
+    method="POST"
+    onSubmit={(e) => {
+      setSubmitted(true);
+    }}
+    style={{ background: B.ink, borderRadius: 16, padding: 28 }}>
+    
+    <div style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 22, color: B.white, marginBottom: 8, textAlign: "center" }}>
+      Get your remediation roadmap
+    </div>
+    <div style={{ fontSize: 14, color: "#A8A29E", textAlign: "center", marginBottom: 24, lineHeight: 1.6 }}>
+      A DataSattva expert will review your results and provide a personalised action plan — at no charge.
+    </div>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+      {[
+        { key: "name",  placeholder: "Your name",         type: "text"  },
+        { key: "org",   placeholder: "Organisation",       type: "text"  },
+        { key: "email", placeholder: "Business email",     type: "email" },
+        { key: "phone", placeholder: "Phone / WhatsApp",   type: "tel"   },
+      ].map(f => (
+        <input 
+          key={f.key} 
+          type={f.type} 
+          name={f.key}
+          placeholder={f.placeholder}
+          value={lead[f.key]} 
+          onChange={e => setLead(p => ({ ...p, [f.key]: e.target.value }))}
+          required={f.key === "name" || f.key === "org" || f.key === "email"}
+          style={{ padding: "12px 14px", borderRadius: 8, border: "1px solid #3A3530", background: "#2A2520", color: B.white, fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif" }} />
+      ))}
+    </div>
+    <button
+      type="submit"
+      disabled={!lead.name || !lead.org || !lead.email}
+      style={{ width: "100%", background: lead.name && lead.org && lead.email ? B.turmeric : "#3A3530", color: B.white, border: "none", borderRadius: 8, padding: 14, fontWeight: 600, fontSize: 15, cursor: lead.name && lead.org && lead.email ? "pointer" : "default", fontFamily: "Inter, sans-serif" }}>
+      Send me my roadmap
+    </button>
+    <div style={{ fontSize: 12, color: "#6B6560", textAlign: "center", marginTop: 10 }}>
+      No spam. Expert callback within one business day. · datasattva.com
+    </div>
+  </form>
           ) : (
             <div style={{ background: B.white, border: `1px solid ${B.fog}`, borderRadius: 16, padding: 28, textAlign: "center" }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🙏</div>
