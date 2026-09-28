@@ -495,12 +495,9 @@ export default function DataSattva() {
 
           {/* Lead capture */}
         {!submitted ? (
-  <form 
-    action="https://formspree.io/f/mzezklја" 
-    method="POST"
-    onSubmit={(e) => {
-      setSubmitted(true);
-    }}
+ <form 
+  action="https://formspree.io/f/mzezklја" 
+  method="POST"
     style={{ background: B.ink, borderRadius: 16, padding: 28 }}>
     
     <div style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 22, color: B.white, marginBottom: 8, textAlign: "center" }}>
