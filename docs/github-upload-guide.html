@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataSattva — what to upload to GitHub</title>
+<style>
+  :root{
+    --navy:#0B1F3A;--navy700:#17365e;--blue:#1A6BEE;--blue700:#0F57CC;--blue50:#EEF5FF;--blue100:#DBE9FF;
+    --saffron:#FFB020;--paper:#F7F9FC;--mist:#EEF2F8;--line:#DDE5EF;--line2:#E9EEF6;
+    --ink:#0B1F3A;--ink70:#3D4F68;--ink60:#55677F;--ink50:#5F7089;
+    --ok:#1C7A5B;--okbg:#E8F5F0;--warn:#A2600A;--warnbg:#FDF3E3;--risk:#B3261E;--riskbg:#FDECEA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .shell{max-width:920px;margin:0 auto;padding:0 22px 90px}
+  header.top{background:linear-gradient(165deg,#0B1F3A,#153560);color:#C3D4EA;padding:40px 0 32px;margin-bottom:32px}
+  header.top .shell{padding-bottom:0}
+  .brandline b{color:#fff;font-size:18px;letter-spacing:-.01em}
+  .brandline span{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--saffron);margin-top:2px}
+  h1{color:#fff;font-size:clamp(1.6rem,1.35rem+1.5vw,2.3rem);line-height:1.15;letter-spacing:-.02em;margin:16px 0 10px}
+  .sub{margin:0;max-width:66ch;font-size:15px}
+  h2{font-size:clamp(1.25rem,1.1rem+.7vw,1.6rem);letter-spacing:-.02em;margin:48px 0 6px;padding-top:18px;border-top:2px solid var(--navy)}
+  h3{font-size:1.05rem;margin:26px 0 8px}
+  p{margin:0 0 14px;color:var(--ink70)}
+  ul,ol{color:var(--ink70);margin:0 0 16px;padding-left:1.25rem}
+  li{margin-bottom:7px}
+  li::marker{color:var(--blue)}
+  strong{color:var(--navy);font-weight:600}
+  code{font:.86em/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--mist);padding:.12em .4em;border-radius:4px;color:var(--navy)}
+  pre{background:#0B1F3A;color:#DCE8F8;padding:16px 18px;border-radius:10px;overflow-x:auto;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:0 0 18px}
+  pre code{background:none;color:inherit;padding:0;font-size:13px}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 20px}
+  th{background:var(--paper);text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink60);padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink70)}
+  tr:last-child td{border-bottom:0}
+  .box{background:#fff;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 20px;font-size:14.5px;color:var(--navy700)}
+  .box.warn{background:var(--warnbg);border-color:#FFE4AC;border-left-color:var(--saffron);color:#6B4A0C}
+  .box.stop{background:var(--riskbg);border-color:#F6C7C3;border-left-color:var(--risk);color:#7D1A14}
+  .box.ok{background:var(--okbg);border-color:#BFE3D5;border-left-color:var(--ok);color:#155F47}
+  .box>b:first-child{display:block;margin-bottom:5px;font-size:15px}
+  .tree{background:#0B1F3A;color:#DCE8F8;padding:18px 20px;border-radius:10px;font:13px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:auto;margin:0 0 18px;white-space:pre}
+  .tree .c{color:#7E9AC0}
+  .tree .y{color:#FFB020}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--blue50);color:var(--blue700)}
+  .pill.req{background:var(--riskbg);color:var(--risk)}
+  .pill.no{background:var(--mist);color:var(--ink60)}
+  .steps{list-style:none;padding:0;counter-reset:s;margin:0 0 20px}
+  .steps>li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:16px;color:var(--ink70)}
+  .steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:29px;height:29px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+  .steps>li>b:first-child{display:block;color:var(--navy);font-size:15.5px;margin-bottom:2px}
+  .foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink50)}
+  @media (max-width:640px){.shell{padding-left:16px;padding-right:16px}}
+  @media print{body{background:#fff}header.top{background:#fff;color:#000;padding:0 0 12px;border-bottom:2px solid #000}h1,.brandline b{color:#000}pre,.tree{background:#f4f4f4;color:#000;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="shell">
+    <div class="brandline"><b>DataSattva</b><span>The clearer side of data</span></div>
+    <h1>What to upload to GitHub</h1>
+    <p class="sub" style="color:#C3D4EA">The exact file list for this website, what each folder does, and the one folder you should <em>not</em> commit. Everything below is already prepared in <code>github-upload/</code> — or grab <code>github-upload.zip</code> and unzip it into your repository.</p>
+  </div>
+</header>
+
+<main class="shell">
+
+  <div class="box ok">
+    <b>The short answer</b>
+    You do <b>not</b> have a hand-written <code>index.html</code> to upload. This site is generated: <code>build.mjs</code> assembles <code>index.html</code> and every other page from the files in <code>src/</code> each time Vercel builds. So you upload the <b>source</b> (66 files, ~19 MB, mostly the preview screenshots), and Vercel runs <code>npm run vercel-build</code> to produce <code>dist/</code> — which is exactly what <code>vercel.json</code> tells it to do.
+  </div>
+
+  <h2>1 · Upload this — the complete list</h2>
+
+  <div class="tree"><span class="c">datasattva/                      ← repository root</span>
+├── package.json                 <span class="c">scripts + dependencies (Vercel reads this)</span>
+├── package-lock.json            <span class="c">exact dependency versions — commit it</span>
+├── vercel.json                  <span class="c">build command, output dir, headers, redirects</span>
+├── build.mjs                    <span class="c">the static site generator</span>
+├── server.mjs                   <span class="c">optional local/self-hosted server (Express)</span>
+├── .env.example                 <span class="c">names of the variables, no secrets</span>
+├── .gitignore                   <span class="c">keeps node_modules/, dist/, data/, .env out</span>
+├── .gitattributes               <span class="c">line endings</span>
+├── README.md                    <span class="c">how to build, run, deploy, edit</span>
+├── api/
+│   └── enquiries.js             <span class="y">the form endpoint — needed or the form 404s</span>
+├── src/
+│   ├── pages/        (10 files) <span class="c">about, contact, dpdp, home, insights, privacy,</span>
+│   │                            <span class="c">services, terms, assessment, assessment-embed</span>
+│   ├── data/         (5 files)  <span class="c">assessment questions, insights articles,</span>
+│   │                            <span class="c">regulatory content, services, site config</span>
+│   ├── lib/          (5 files)  <span class="c">components, layout, icons, enquiry validation,</span>
+│   │                            <span class="c">email delivery</span>
+│   ├── scripts/      (3 files)  <span class="c">assessment.js, contact.js, main.js</span>
+│   ├── styles/
+│   │   └── main.css             <span class="c">the single stylesheet</span>
+│   └── fonts/
+│       ├── inter-latin.woff2
+│       └── montserrat-latin.woff2
+├── tools/
+│   ├── vercel-build.mjs         <span class="y">runs on Vercel; blocks deploy if email isn't configured</span>
+│   ├── check-links.mjs          <span class="c">QA: broken links + structure</span>
+│   └── check-a11y.mjs           <span class="c">QA: axe accessibility audit</span>
+├── docs/
+│   ├── zoho-mail-and-live-site-guide.html
+│   ├── github-upload-guide.html       <span class="c">this page</span>
+│   └── deployment-and-editing-guide.html
+└── preview/         (29 files)  <span class="c">design screenshots + gallery — optional</span></div>
+
+  <p class="pill">66 files · 19 MB</p>
+  <p style="margin-top:10px">Six top-level files, four folders, plus the preview screenshots. Nothing else is needed.</p>
+
+  <h2>2 · Do <em>not</em> upload these</h2>
+  <table>
+    <tr><th>Path</th><th>Why not</th><th>What happens</th></tr>
+    <tr><td><code>node_modules/</code></td><td>68 MB of installed packages; <code>npm ci</code> rebuilds it from the lockfile</td><td>Already in <code>.gitignore</code>. Committing it makes the repo huge and Vercel's build slower.</td></tr>
+    <tr><td><code>dist/</code></td><td>Generated output — Vercel creates it during the build</td><td>Already ignored. If you commit it you get confusing stale pages whenever the build output differs from the checked-in copy.</td></tr>
+    <tr><td><code>data/</code></td><td>Local enquiry log (<code>enquiries.ndjson</code>) — real people's details</td><td>Ignored, and it should stay that way: never push personal data to GitHub.</td></tr>
+    <tr><td><code>.env</code></td><td>Real secrets — the ZeptoMail token lives here locally</td><td>Ignored. Secrets go in Vercel → Settings → Environment Variables, never in the repo.</td></tr>
+  </table>
+
+  <div class="box warn">
+    <b>Don't copy the whole project folder by accident</b>
+    If you drag the folder into GitHub's web uploader, it will offer to include <code>node_modules</code> and <code>dist</code>. Select only the items in the tree above — or unzip <code>github-upload.zip</code>, which already excludes them.
+  </div>
+
+  <h2>3 · Two ways to get it in</h2>
+
+  <h3>Way A — drag and drop in the browser (no tools)</h3>
+  <ol class="steps">
+    <li><b>Create an empty repository</b>
+      GitHub → <b>+</b> (top right) → <b>New repository</b> → name it <code>datasattva-website</code> → <b>Private</b> → do <em>not</em> tick "Add a README" → <b>Create</b>.</li>
+    <li><b>Upload</b>
+      On the empty repo page click <b>uploading an existing file</b>. Unzip <code>github-upload.zip</code> on your computer (it unpacks to a single folder also called <code>github-upload</code>), then drag <em>the contents of that folder</em> — not the folder itself — into the browser. Wait for all 66 files to list, then <b>Commit changes</b>.
+      <p style="margin:8px 0 0"><span class="pill no">Note</span> The browser uploader silently skips empty folders and files starting with a dot, so afterwards check that <code>.gitignore</code>, <code>.gitattributes</code> and <code>.env.example</code> are present. If they're missing, add them with <b>Add file → Create new file</b> and the exact same name.</p></li>
+    <li><b>Connect it to Vercel</b>
+      Vercel → <b>Add New… → Project → Import Git Repository</b> → pick the repo → leave all settings alone → <b>Deploy</b>.</li>
+  </ol>
+
+  <h3>Way B — command line (cleaner, keeps history)</h3>
+  <pre><code>cd /path/to/github-upload
+git init
+git add -A
+git commit -m "DataSattva website"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/datasattva-website.git
+git push -u origin main</code></pre>
+  <p>To check what you are about to push before you push it: <code>git status --short</code> and <code>git ls-files | wc -l</code> — it should say 66, and should not contain <code>node_modules</code>, <code>dist</code> or <code>data</code> anywhere.</p>
+
+  <h2>4 · What Vercel must be set to</h2>
+  <p>You normally don't need to touch this — <code>vercel.json</code> is committed and wins. But if the project settings screen asks, this is the correct configuration:</p>
+  <table>
+    <tr><th>Setting</th><th>Value</th></tr>
+    <tr><td>Framework preset</td><td><b>Other</b> (no framework)</td></tr>
+    <tr><td>Build command</td><td><code>npm run vercel-build</code></td></tr>
+    <tr><td>Output directory</td><td><code>dist</code></td></tr>
+    <tr><td>Install command</td><td>leave default (<code>npm ci</code> / <code>npm install</code>)</td></tr>
+    <tr><td>Node version</td><td>20.x or newer (the code uses modern ESM and <code>fetch</code>)</td></tr>
+    <tr><td>Root directory</td><td>repository root — unless you committed the folder <em>inside</em> a folder, in which case point it at that folder</td></tr>
+  </table>
+
+  <div class="box stop">
+    <b>If the build fails with "No delivery channel"</b>
+    That is deliberate. <code>tools/vercel-build.mjs</code> refuses to produce a site whose forms would silently lose enquiries. Add <code>ZEPTOMAIL_SEND_TOKEN</code> and <code>ENQUIRY_TO_EMAIL</code> in Vercel → Settings → Environment Variables, then redeploy. Full walkthrough: <code>docs/zoho-mail-and-live-site-guide.html</code>, Part 3.
+  </div>
+
+  <h2>5 · After the first deploy</h2>
+  <ul>
+    <li>Open the <code>.vercel.app</code> URL and click through the menu — that is your proof the build is good before any domain moves.</li>
+    <li>Then follow <b>Part 1, Step 1.2</b> of <code>docs/zoho-mail-and-live-site-guide.html</code> to point <code>www.datasattva.com</code> at this project.</li>
+    <li>Editing later: pages and copy live in <code>src/pages/</code> and <code>src/data/</code> — change a file, commit, Vercel rebuilds automatically. You never edit <code>dist/</code> by hand.</li>
+  </ul>
+
+  <p class="foot">DataSattva — internal upload reference. Prepared alongside <code>docs/zoho-mail-and-live-site-guide.html</code> (deploy + Zoho) and <code>docs/deployment-and-editing-guide.html</code> (full technical runbook).</p>
+
+</main>
+</body>
+</html>

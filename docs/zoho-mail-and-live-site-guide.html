@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataSattva — putting the new site live and connecting the forms to Zoho Mail</title>
+<meta name="description" content="Plain-language, click-by-click guide: deploy the new DataSattva site on Vercel, keep Zoho Mail working, and deliver contact-form and assessment results to a Zoho inbox with ZeptoMail.">
+<style>
+  :root{
+    --navy:#0B1F3A;--navy700:#17365e;--blue:#1A6BEE;--blue700:#0F57CC;--blue50:#EEF5FF;--blue100:#DBE9FF;
+    --saffron:#FFB020;--paper:#F7F9FC;--mist:#EEF2F8;--line:#DDE5EF;--line2:#E9EEF6;
+    --ink:#0B1F3A;--ink70:#3D4F68;--ink60:#55677F;--ink50:#5F7089;
+    --ok:#1C7A5B;--okbg:#E8F5F0;--warn:#A2600A;--warnbg:#FDF3E3;--risk:#B3261E;--riskbg:#FDECEA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .shell{max-width:900px;margin:0 auto;padding:0 22px 90px}
+  header.top{background:linear-gradient(165deg,#0B1F3A,#153560);color:#B7C8E0;padding:42px 0 34px;margin-bottom:34px}
+  header.top .shell{padding-bottom:0}
+  .brandline{display:flex;align-items:center;gap:11px;margin-bottom:22px}
+  .brandline b{color:#fff;font-size:18px;letter-spacing:-.01em}
+  .brandline span{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--saffron);margin-top:2px}
+  h1{color:#fff;font-size:clamp(1.7rem,1.4rem+1.6vw,2.4rem);line-height:1.15;letter-spacing:-.02em;margin:0 0 12px}
+  .sub{margin:0;max-width:66ch;font-size:15px;line-height:1.65}
+  h2{font-size:clamp(1.3rem,1.15rem+.7vw,1.7rem);letter-spacing:-.02em;margin:52px 0 6px;padding-top:18px;border-top:2px solid var(--navy)}
+  h3{font-size:1.08rem;margin:30px 0 8px;letter-spacing:-.01em}
+  h4{font-size:.95rem;margin:22px 0 6px;color:var(--navy700)}
+  p{margin:0 0 14px;color:var(--ink70)}
+  ul,ol{color:var(--ink70);margin:0 0 16px;padding-left:1.25rem}
+  li{margin-bottom:8px}
+  li::marker{color:var(--blue)}
+  strong{color:var(--navy);font-weight:600}
+  a{color:var(--blue700)}
+  code{font:.88em/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--mist);padding:.12em .4em;border-radius:4px;color:var(--navy)}
+  pre{background:#0B1F3A;color:#DCE8F8;padding:16px 18px;border-radius:10px;overflow-x:auto;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:0 0 18px}
+  pre code{background:none;color:inherit;padding:0;font-size:13px}
+  .kicker{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue700);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .kicker::before{content:"";width:18px;height:2px;background:var(--saffron);border-radius:2px}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 20px}
+  th{background:var(--paper);text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink60);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink70)}
+  tr:last-child td{border-bottom:0}
+  td strong{color:var(--navy)}
+  .box{background:#fff;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 20px;font-size:14.5px;color:var(--navy700)}
+  .box.warn{background:var(--warnbg);border-color:#FFE4AC;border-left-color:var(--saffron);color:#6B4A0C}
+  .box.stop{background:var(--riskbg);border-color:#F6C7C3;border-left-color:var(--risk);color:#7D1A14}
+  .box.ok{background:var(--okbg);border-color:#BFE3D5;border-left-color:var(--ok);color:#155F47}
+  .box b{display:inline;color:inherit}
+  .box>b:first-child,.box>p:first-child>b:first-child{display:block;margin-bottom:6px;font-size:15.5px}
+  header.top .sub{color:#C3D4EA}
+  .steps{list-style:none;padding:0;counter-reset:s;margin:0 0 20px}
+  .steps>li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:18px;color:var(--ink70)}
+  .steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:29px;height:29px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+  .steps>li>b:first-child{display:block;color:var(--navy);font-size:15.5px;margin-bottom:2px}
+  .steps>li b{color:var(--navy);font-weight:600}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card h4{margin-top:0}
+  .card p:last-child{margin-bottom:0}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--blue50);color:var(--blue700);margin-right:6px}
+  .pill.req{background:var(--riskbg);color:var(--risk)}
+  .pill.opt{background:var(--mist);color:var(--ink60)}
+  .pill.you{background:var(--warnbg);color:var(--warn)}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:10px}
+  nav.toc h3{margin:0 0 10px;font-size:.82rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink50)}
+  nav.toc ol{margin:0;padding-left:1.1rem;font-size:14.5px}
+  nav.toc li{margin-bottom:5px}
+  nav.toc a{text-decoration:none}
+  nav.toc a:hover{text-decoration:underline}
+  hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+  .foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink50)}
+  @media (max-width:680px){.grid2{grid-template-columns:1fr}}
+  @media print{
+    body{background:#fff}header.top{background:#fff;color:#000;padding:0 0 12px;border-bottom:2px solid #000}
+    h1,.brandline b{color:#000}.brandline span{color:#333}pre{background:#f4f4f4;color:#000;border:1px solid #ccc}
+    h2{page-break-after:avoid}.steps>li,.card,table{page-break-inside:avoid}
+  }
+  .note{font-size:13.5px;color:var(--ink60)}
+  .say{background:var(--blue50);border:1px solid var(--blue100);border-radius:10px;padding:12px 16px;margin:0 0 18px;font-size:14.5px;color:#14406F}
+  .say b{color:var(--navy)}
+  .click{display:inline-block;background:var(--mist);border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-size:.9em;font-weight:600;color:var(--navy);white-space:nowrap}
+  .time{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue700);background:var(--blue50);border-radius:999px;padding:3px 10px;display:inline-block;margin-bottom:8px}
+  table.tight td,table.tight th{padding:8px 11px;font-size:13.5px}
+  .steps>li .sub2{margin:6px 0 0;font-size:14.5px}
+  ol.plain{padding-left:1.2rem}
+</style></head>
+<body>
+
+<header class="top">
+  <div class="shell">
+    <div class="brandline">
+      <div>
+        <b>DataSattva</b>
+        <span>The clearer side of data</span>
+      </div>
+    </div>
+    <h1>Putting the new website live — and getting the form results into Zoho Mail</h1>
+    <p class="sub">A plain-language guide. No coding. You click through a few screens, copy a few values, and you're done. Read it once from start to finish before you begin, then follow it with the browser open.</p>
+  </div>
+</header>
+
+<main class="shell">
+
+  <div class="box ok">
+    <b>What you are doing, in one paragraph</b>
+    Your website files are already built and sitting in a folder called <code>dist</code>. You will upload them to Vercel (the company that currently shows your site at <b>www.datasattva.com</b>), tell Vercel to show this new version instead of the old one, then connect a free Zoho sending service so that whenever somebody fills in the contact form or the assessment form, an email arrives in your Zoho Mail inbox.
+  </div>
+
+  <nav class="toc" aria-labelledby="toc-h">
+    <h3 id="toc-h">The five parts</h3>
+    <ol>
+      <li><a href="#part1">Put the new website live</a> — about 20 minutes</li>
+      <li><a href="#part2">Make sure Zoho Mail keeps working</a> — 5 minutes of checking</li>
+      <li><a href="#part3">Connect the forms to Zoho (ZeptoMail)</a> — about 25 minutes</li>
+      <li><a href="#part4">Test everything</a> — 10 minutes</li>
+      <li><a href="#part5">If something goes wrong</a></li>
+      <li><a href="#part6">The values you need to type</a> — one-page summary</li>
+    </ol>
+  </nav>
+
+  <div class="box warn">
+    <b>Before you start, gather these</b>
+    Your Vercel login · your Namecheap login (password manager or 2FA phone handy) · your Zoho Mail login · the folder <code>dist</code> from this project · 30–40 minutes without interruptions. Do not start at 11 pm on a Friday. Do it in the morning on a weekday, so that if anything is off you can fix it the same day.
+  </div>
+
+  <div class="box stop">
+    <b>The one thing that would break your email</b>
+    Your domain <code>datasattva.com</code> is registered at Namecheap, and the records that tell the world "send this domain's email to Zoho" (called <b>MX records</b>) live at Namecheap. Somewhere in Vercel you will see an option offering to <b>move your nameservers to Vercel</b>. <b>Say no.</b> Moving nameservers moves those email records too, and Zoho Mail stops receiving. Everything in this guide works without touching nameservers.
+  </div>
+
+  <h2 id="part1">Part 1 — Put the new website live</h2>
+  <p class="say"><b>In plain words:</b> your new site needs somewhere to live, and your address <code>www.datasattva.com</code> needs to point at the new site instead of the old one. Both are done inside Vercel.</p>
+  <div class="time">About 20 minutes</div>
+
+  <h3>Step 1.1 — Get the website files into a Vercel project</h3>
+  <p>You have two ways. Pick <b>one</b>.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Way A — no GitHub (simplest)</h4>
+      <ol class="plain">
+        <li>Install Vercel's command-line tool once. Open Terminal (Mac) or PowerShell (Windows) and type:<br><code>npm i -g vercel</code></li>
+        <li>In the same window, go into the project folder (the one containing <code>dist</code>) and type:<br><code>vercel</code></li>
+        <li>It asks you to log in — press Enter, it opens the browser, approve it.</li>
+        <li>Accept the defaults it suggests (project name <code>datasattva</code>), and answer <b>no</b> to "Link to existing project?".</li>
+        <li>When it finishes it prints a preview address ending in <code>.vercel.app</code>. Open it. That is your new site, live but not yet on your domain.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4>Way B — with GitHub</h4>
+      <ol class="plain">
+        <li>Create an empty repository on GitHub (private is fine), push this project folder to it.</li>
+        <li>In Vercel, click <span class="click">Add New…</span> → <span class="click">Project</span>.</li>
+        <li>Choose <span class="click">Import Git Repository</span> and pick the repository.</li>
+        <li>Leave all settings as they are (the project already contains <code>vercel.json</code>, which tells Vercel what to do). Click <span class="click">Deploy</span>.</li>
+        <li>When it finishes, open the <code>.vercel.app</code> address it gives you.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="box">
+    <b>Checkpoint</b>
+    The <code>.vercel.app</code> address should look exactly like your finished site: the navy header, the "Take the 3-Minute Assessment" button, and every page in the menu reachable. If it looks broken, stop and fix that first — do not move your domain onto it yet.
+  </div>
+
+  <h3>Step 1.2 — Add your domain to the new project</h3>
+  <ol class="steps">
+    <li><b>Open the new project in Vercel</b>
+      Project → <span class="click">Settings</span> → <span class="click">Domains</span>.</li>
+    <li><b>Type your domain</b>
+      In the box, type <code>www.datasattva.com</code> and click <span class="click">Add</span>. Then do it again for <code>datasattva.com</code> (without the www).</li>
+    <li><b>Accept the "move domain" prompt</b>
+      Because the domain already exists in your Vercel account (on the old project), Vercel will say something like <i>"This domain is already in use by another project — move it here?"</i>. Click <span class="click">Move</span> / <span class="click">Confirm</span>.
+      <p class="sub2">That single click is the actual switchover. Vercel changes where the domain points; Namecheap is not involved at all, and your email records are untouched.</p></li>
+    <li><b>Set the main address</b>
+      Vercel will ask which one is the primary. Choose <code>www.datasattva.com</code> and let the version without <code>www</code> redirect to it.</li>
+    <li><b>Wait for the tick</b>
+      Each domain line shows a status. It usually turns green within a minute or two. While it says "pending", just wait.</li>
+  </ol>
+
+  <div class="box ok">
+    <b>Checkpoint</b>
+    Open a new browser tab and go to <code>https://www.datasattva.com</code>. You should see the <b>new</b> site, with the little padlock in the address bar. Try three or four pages from the menu, and try it on your phone.
+  </div>
+
+  <h3>Step 1.3 — If you need to undo it</h3>
+  <ol class="plain">
+    <li>In the <b>old</b> project: <span class="click">Settings</span> → <span class="click">Domains</span> → <span class="click">Add</span> → <code>www.datasattva.com</code> → accept the move prompt again.</li>
+    <li>Or, if the old site is the same project: <span class="click">Deployments</span> → find the previous working deployment → <span class="click">⋯</span> → <span class="click">Promote to Production</span>.</li>
+  </ol>
+  <p class="note">Undoing takes about a minute, which is why doing this on a weekday morning is worth the effort.</p>
+
+  <h2 id="part2">Part 2 — Make sure Zoho Mail keeps working</h2>
+  <p class="say"><b>In plain words:</b> nothing you did in Part 1 touches email. This part is just five minutes of confirming that, so you notice a problem now rather than when a client's email bounces.</p>
+
+  <ol class="steps">
+    <li><b>Send yourself an email from outside</b>
+      From your phone (mobile data on, not office wi-fi) or a Gmail account, send a short email to your Zoho address, e.g. <code>hello@datasattva.com</code>. It should arrive within a minute.</li>
+    <li><b>Reply from Zoho Mail</b>
+      Reply to that message. The reply should land in the other inbox. If both directions work, your MX, SPF and DKIM records are all still fine.</li>
+    <li><b>Confirm you did not move nameservers</b>
+      In Vercel, open <span class="click">Settings</span> → <span class="click">Domains</span>. If you see a banner about "Vercel DNS" or nameservers, ignore it. In Namecheap, under <span class="click">Domain List</span> → <span class="click">Manage</span> → <span class="click">Nameservers</span>, it should still read <b>Namecheap BasicDNS</b> (or your own custom nameservers) — not <code>ns1.vercel-dns.com</code>.</li>
+  </ol>
+
+  <div class="box stop">
+    <b>If step 1 fails and email stops arriving</b>
+    Go to Namecheap → <span class="click">Domain List</span> → <span class="click">Manage</span> → <span class="click">Advanced DNS</span>. The <b>Mail Settings</b> should say <b>Custom MX</b>, and there should be three MX records pointing at <code>mx.zoho.in</code> (priority 10), <code>mx2.zoho.in</code> (20), <code>mx3.zoho.in</code> (50). If they are gone, Zoho's setup page (Zoho Mail Admin → Domains → your domain → <b>Email Delivery / MX</b>) shows the exact values to paste back in. Then wait 30 minutes and retest.
+  </div>
+
+  <h2 id="part3">Part 3 — Connect the forms to Zoho Mail</h2>
+  <p class="say"><b>In plain words:</b> the website's forms cannot email you by themselves — they need a small sending service. Zoho has exactly that, called <b>ZeptoMail</b>. It is part of Zoho, it is free for 10,000 emails (plenty — your forms might send a few dozen a month), and the mail lands in the Zoho Mail inbox you already use.</p>
+  <div class="time">About 25 minutes</div>
+
+  <div class="box warn">
+    <b>Why not just use your Zoho Mail password in the website?</b>
+    Vercel deliberately blocks the old-fashioned way of sending mail (called SMTP) because it silently drops messages. Using ZeptoMail — Zoho's official sending service — is the reliable route, and it means your mailbox password is never stored inside the website. You will not type your Zoho password anywhere in this part.
+  </div>
+
+  <h3>Step 3.1 — Create the ZeptoMail account (5 min)</h3>
+  <ol class="steps">
+    <li><b>Go to ZeptoMail</b>
+      Open <code>zoho.com/zeptomail</code> and click <span class="click">Sign up for free</span>. Sign in with the <b>same Zoho account</b> you use for Zoho Mail — then everything lives in one place.</li>
+    <li><b>Choose the India data centre if offered</b>
+      Zoho asks which region your account is in. Pick <b>India</b> (or the region your Zoho Mail already uses). Picking a different one from your mailbox is allowed, but keeping them the same is simpler.</li>
+    <li><b>Create a "Mail Agent"</b>
+      ZeptoMail calls its sending identity a <b>Mail Agent</b>. Click <span class="click">Mail Agents</span> → <span class="click">Add Mail Agent</span>. Name it something obvious like <code>Website forms</code>.</li>
+  </ol>
+
+  <h3>Step 3.2 — Prove you own datasattva.com (10 min, mostly waiting)</h3>
+  <ol class="steps">
+    <li><b>Add the domain</b>
+      Inside the Mail Agent, go to <span class="click">Domains</span> (sometimes shown as "Sending Domains") → <span class="click">Add Domain</span> → type <code>datasattva.com</code> → <span class="click">Add</span>.
+      <p class="sub2">Type it without <code>www.</code></p></li>
+    <li><b>Zoho shows you 2–3 DNS records</b>
+      They will look like a <b>TXT</b> record, a <b>CNAME</b> record, and possibly a second TXT for DKIM. Keep this browser tab open — you need to copy these values exactly.</li>
+    <li><b>Paste them into Namecheap</b>
+      In a second tab: Namecheap → <span class="click">Domain List</span> → <span class="click">Manage</span> next to datasattva.com → <span class="click">Advanced DNS</span> → <span class="click">Add New Record</span>. For each record Zoho showed you, choose the matching <b>Type</b>, paste the <b>Host</b> and <b>Value</b>, leave TTL on <i>Automatic</i>, and click the green tick to save.
+      <div class="box" style="margin:12px 0 0">
+        <b>Two small gotchas</b>
+        Namecheap adds the domain automatically, so if Zoho says host <code>@</code> or <code>datasattva.com</code>, just enter <code>@</code>. And paste values with no spaces at the start or end — a stray space is the most common reason verification fails.
+      </div></li>
+    <li><b>Click Verify and wait</b>
+      Back in ZeptoMail, click <span class="click">Verify</span>. It usually goes green in 5–30 minutes. If it still says pending after an hour, re-paste each record and check for typos.</li>
+  </ol>
+
+  <div class="box warn">
+    <b>The SPF record — the one place to be careful</b>
+    You already have an SPF record for Zoho Mail (a TXT record starting <code>v=spf1 include:zoho.in …</code>). There can only be <b>one</b> SPF record on a domain. If ZeptoMail asks you to add one and you already have it, do <b>not</b> create a second — <b>edit</b> the existing one so it includes both Zoho services. Zoho's own instructions show the exact combined line to use. Two SPF records cancel each other out and mail starts going to spam.
+  </div>
+
+  <h3>Step 3.3 — Copy the sending key (2 min)</h3>
+  <ol class="steps">
+    <li><b>Open the Mail Agent's keys</b>
+      Mail Agent → <span class="click">SMTP/API</span> (or <span class="click">Send Mail Token</span>).</li>
+    <li><b>Create a token</b>
+      Click <span class="click">Create Send Mail Token</span>, name it <code>Vercel website</code>, and copy the long string it shows.
+      <div class="box stop" style="margin:12px 0 0"><b>Copy it now.</b> ZeptoMail shows this key only once. If you lose it, delete the token and make a new one — no harm done, the old one simply stops working.</div></li>
+  </ol>
+
+  <h3>Step 3.4 — Put the key into Vercel (5 min)</h3>
+  <ol class="steps">
+    <li><b>Open the environment variables screen</b>
+      Vercel → your project → <span class="click">Settings</span> → <span class="click">Environment Variables</span>.</li>
+    <li><b>Add these five, one at a time</b>
+      For each: type the <b>Key</b>, paste the <b>Value</b>, tick all three environments (Production, Preview, Development), click <span class="click">Save</span>.
+      <table class="tight">
+        <tr><th>Key</th><th>Value to paste</th></tr>
+        <tr><td><code>ZEPTOMAIL_SEND_TOKEN</code></td><td>the long key you copied in step 3.3</td></tr>
+        <tr><td><code>ZEPTOMAIL_API_HOST</code></td><td><code>api.zeptomail.in</code> &nbsp;<span class="note">(India; use <code>api.zeptomail.eu</code> or <code>api.zeptomail.com</code> if you signed up in another region)</span></td></tr>
+        <tr><td><code>ENQUIRY_TO_EMAIL</code></td><td><code>hello@datasattva.com</code> &nbsp;<span class="note">— the Zoho inbox that should receive form results</span></td></tr>
+        <tr><td><code>ENQUIRY_FROM_EMAIL</code></td><td><code>DataSattva Website &lt;website@datasattva.com&gt;</code></td></tr>
+        <tr><td><code>SITE_URL</code></td><td><code>https://www.datasattva.com</code></td></tr>
+      </table>
+      <p class="sub2"><code>website@datasattva.com</code> does not need to be a real mailbox you read — it only needs to be on the domain you verified. If you prefer, use <code>hello@datasattva.com</code> as the sender too. Add <code>ZEPTOMAIL_BOUNCE_ADDRESS=bounce@datasattva.com</code> later if you want bounce reports separated out.</p></li>
+    <li><b>Redeploy — this step is not optional</b>
+      Vercel only reads new settings when a fresh deployment is built. Go to <span class="click">Deployments</span> → the top row → <span class="click">⋯</span> → <span class="click">Redeploy</span> → confirm. Wait for "Ready".</li>
+  </ol>
+
+  <div class="box">
+    <b>Checkpoint</b>
+    Your project's <span class="click">Settings → Environment Variables</span> should list all five keys. If the site will not build and the log mentions delivery not being configured, one of the keys is missing or was only saved for one environment — re-check, then redeploy.
+  </div>
+
+  <h2 id="part4">Part 4 — Test everything</h2>
+  <p class="say"><b>In plain words:</b> fill in your own forms like a customer would, and confirm the email arrives. Ten minutes now saves a week of wondering whether enquiries are leaking.</p>
+
+  <ol class="steps">
+    <li><b>Send a contact enquiry</b>
+      On <code>www.datasattva.com/contact</code>, fill in the form with your own details, and in the message write "test — please ignore". Use a real email address you can check (a Gmail one is ideal, so you can also test replying). Submit.</li>
+    <li><b>Check the page response</b>
+      You should see a success message containing a reference like <code>DS-2026-XXXXXX</code>. If instead you see a message asking you to email directly, delivery failed — see Part 5.</li>
+    <li><b>Check Zoho Mail</b>
+      Within about a minute, the enquiry should be in the <code>hello@datasattva.com</code> inbox. Open it. Check three things: it is not in Spam, the layout is readable, and clicking <b>Reply</b> addresses your test email (not the website).</li>
+    <li><b>Test the assessment form</b>
+      Open <code>www.datasattva.com/dpdp-readiness-assessment</code>, complete the questions, then use the "send me this result" box at the end with your own details. A second email should arrive, this one showing the score, band and the count of critical / high / moderate gaps.</li>
+    <li><b>Test a mistake</b>
+      Submit the contact form with an empty name and an email typed as <code>abc@</code>. It should refuse and explain, without sending anything.</li>
+    <li><b>Check mobile</b>
+      Do one submission from your phone. Half your visitors will be on a phone.</li>
+  </ol>
+
+  <div class="box ok">
+    <b>When all six pass</b>
+    You are live. Keep the ZeptoMail login and the token in your password manager, and note the date in your calendar for one year — that is when the free plan and the DNS records are worth re-checking.
+  </div>
+
+  <h2 id="part5">Part 5 — If something goes wrong</h2>
+  <table class="tight">
+    <tr><th>What you see</th><th>What it usually means</th><th>What to do</th></tr>
+    <tr><td>The page says the message could not be sent and asks you to email directly</td><td>ZeptoMail rejected the send — usually a wrong token, or the sender is not on the verified domain</td><td>Re-copy <code>ZEPTOMAIL_SEND_TOKEN</code>; check <code>ENQUIRY_FROM_EMAIL</code> uses <code>@datasattva.com</code>. Then redeploy.</td></tr>
+    <tr><td>Same message, and the ZeptoMail domain says "pending"</td><td>Domain verification has not completed</td><td>Re-paste the TXT/CNAME records in Namecheap, check for stray spaces, click Verify again.</td></tr>
+    <tr><td>Form works but no email arrives anywhere</td><td>Typo in <code>ENQUIRY_TO_EMAIL</code>, or it is sitting in Spam</td><td>Check Spam first. Then Settings → Environment Variables, fix, redeploy.</td></tr>
+    <tr><td>You changed a setting and nothing changed</td><td>Vercel only applies new variables to a new deployment</td><td>Deployments → ⋯ → Redeploy.</td></tr>
+    <tr><td>Build fails saying delivery is not configured</td><td>Missing <code>ZEPTOMAIL_SEND_TOKEN</code> or <code>ENQUIRY_TO_EMAIL</code></td><td>Add both, tick Production, redeploy.</td></tr>
+    <tr><td>Email to your Zoho inbox stops arriving (not form email — all email)</td><td>MX records were changed — usually because nameservers moved</td><td>Namecheap → Advanced DNS → restore the three <code>mx.zoho.in</code> records (Part 2). This is the one problem worth waking someone up for, and the reason you never move nameservers.</td></tr>
+    <tr><td>Site shows "domain not found" after the swap</td><td>Domain still attached to the old project</td><td>Repeat Step 1.2 — add the domain to the new project and accept the move prompt.</td></tr>
+    <tr><td>Old site is back / wrong site showing</td><td>Deployment rolled back, or the domain moved back</td><td>Deployments → latest → <span class="click">Promote to Production</span>.</td></tr>
+  </table>
+
+  <h3>Where to look for clues</h3>
+  <p>Vercel keeps a log of every form submission attempt. Project → <span class="click">Logs</span> (or <span class="click">Deployments → the deployment → Functions</span>) and look for <code>/api/enquiries</code>. Each line says whether the email was delivered, and if it was not, the reason. Nothing sensitive is written to the page itself.</p>
+
+  <h2 id="part6">Part 6 — The values you need to type, all in one place</h2>
+  <p>Fill this in once, keep it in your password manager or a shared note, never in a public file.</p>
+  <table class="tight">
+    <tr><th>Item</th><th>Where it goes</th><th>Value</th></tr>
+    <tr><td>Vercel project name</td><td>Vercel</td><td><code>datasattva</code></td></tr>
+    <tr><td>Domains</td><td>Vercel → Settings → Domains</td><td><code>www.datasattva.com</code> (primary), <code>datasattva.com</code></td></tr>
+    <tr><td>ZeptoMail send token</td><td>Vercel → <code>ZEPTOMAIL_SEND_TOKEN</code></td><td><span class="note">— paste from ZeptoMail —</span></td></tr>
+    <tr><td>ZeptoMail region host</td><td>Vercel → <code>ZEPTOMAIL_API_HOST</code></td><td><code>api.zeptomail.in</code></td></tr>
+    <tr><td>Who receives enquiries</td><td>Vercel → <code>ENQUIRY_TO_EMAIL</code></td><td><code>hello@datasattva.com</code></td></tr>
+    <tr><td>Who enquiries appear to come from</td><td>Vercel → <code>ENQUIRY_FROM_EMAIL</code></td><td><code>DataSattva Website &lt;website@datasattva.com&gt;</code></td></tr>
+    <tr><td>Public site address</td><td>Vercel → <code>SITE_URL</code></td><td><code>https://www.datasattva.com</code></td></tr>
+    <tr><td>Bounce address (optional)</td><td>Vercel → <code>ZEPTOMAIL_BOUNCE_ADDRESS</code></td><td><code>bounce@datasattva.com</code></td></tr>
+    <tr><td>DNS manager</td><td>Namecheap → Advanced DNS</td><td><span class="note">stays exactly as it is; only ZeptoMail's new TXT/CNAME records are added</span></td></tr>
+    <tr><td>Hosting</td><td>Vercel</td><td><span class="note">nameservers = Namecheap BasicDNS, do not move</span></td></tr>
+    <tr><td>Mailbox</td><td>Zoho Mail</td><td><code>mx.zoho.in</code> / <code>mx2.zoho.in</code> / <code>mx3.zoho.in</code></td></tr>
+  </table>
+
+  <div class="box">
+    <b>Still to be decided by you (nothing breaks if these wait)</b>
+    The legal entity name and registered address · a grievance-officer / DPO name and contact (required on the privacy page under the DPDP Act) · whether to publish a phone number · which city the office is described as · whether to add analytics (currently none, which is the privacy-friendly default) · article author names and dates for the Insights section · a photograph or raster social-sharing image.
+  </div>
+
+  <div class="box ok">
+    <b>Order of work, if you only remember one thing</b>
+    Deploy → check the <code>.vercel.app</code> address → add the domain + accept the move prompt → confirm Zoho Mail still arrives → set the five Vercel variables → redeploy → send two test forms → check both emails land. That's the whole job.
+  </div>
+
+  <p class="foot">DataSattva — internal operations guide. Keep this file out of the published website folder. For the longer technical runbook (build settings, content editing, security headers, rollback detail), see <code>docs/deployment-and-editing-guide.html</code>.</p>
+
+</main>
+</body>
+</html>
