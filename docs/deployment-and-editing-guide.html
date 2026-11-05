@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataSattva website — deployment, cutover and editing guide</title>
+<style>
+  :root{
+    --navy:#0B1F3A;--navy700:#17365e;--blue:#1A6BEE;--blue700:#0F57CC;--blue50:#EEF5FF;--blue100:#DBE9FF;
+    --saffron:#FFB020;--paper:#F7F9FC;--mist:#EEF2F8;--line:#DDE5EF;--line2:#E9EEF6;
+    --ink:#0B1F3A;--ink70:#3D4F68;--ink60:#55677F;--ink50:#5F7089;
+    --ok:#1C7A5B;--okbg:#E8F5F0;--warn:#A2600A;--warnbg:#FDF3E3;--risk:#B3261E;--riskbg:#FDECEA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .shell{max-width:900px;margin:0 auto;padding:0 22px 90px}
+  header.top{background:linear-gradient(165deg,#0B1F3A,#153560);color:#B7C8E0;padding:42px 0 34px;margin-bottom:34px}
+  header.top .shell{padding-bottom:0}
+  .brandline{display:flex;align-items:center;gap:11px;margin-bottom:22px}
+  .brandline b{color:#fff;font-size:18px;letter-spacing:-.01em}
+  .brandline span{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--saffron);margin-top:2px}
+  h1{color:#fff;font-size:clamp(1.7rem,1.4rem+1.6vw,2.4rem);line-height:1.15;letter-spacing:-.02em;margin:0 0 12px}
+  .sub{margin:0;max-width:66ch;font-size:15px;line-height:1.65}
+  h2{font-size:clamp(1.3rem,1.15rem+.7vw,1.7rem);letter-spacing:-.02em;margin:52px 0 6px;padding-top:18px;border-top:2px solid var(--navy)}
+  h3{font-size:1.08rem;margin:30px 0 8px;letter-spacing:-.01em}
+  h4{font-size:.95rem;margin:22px 0 6px;color:var(--navy700)}
+  p{margin:0 0 14px;color:var(--ink70)}
+  ul,ol{color:var(--ink70);margin:0 0 16px;padding-left:1.25rem}
+  li{margin-bottom:8px}
+  li::marker{color:var(--blue)}
+  strong{color:var(--navy);font-weight:600}
+  a{color:var(--blue700)}
+  code{font:.88em/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--mist);padding:.12em .4em;border-radius:4px;color:var(--navy)}
+  pre{background:#0B1F3A;color:#DCE8F8;padding:16px 18px;border-radius:10px;overflow-x:auto;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:0 0 18px}
+  pre code{background:none;color:inherit;padding:0;font-size:13px}
+  .kicker{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue700);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .kicker::before{content:"";width:18px;height:2px;background:var(--saffron);border-radius:2px}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 20px}
+  th{background:var(--paper);text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink60);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink70)}
+  tr:last-child td{border-bottom:0}
+  td strong{color:var(--navy)}
+  .box{background:#fff;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 20px;font-size:14.5px;color:var(--navy700)}
+  .box.warn{background:var(--warnbg);border-color:#FFE4AC;border-left-color:var(--saffron);color:#6B4A0C}
+  .box.stop{background:var(--riskbg);border-color:#F6C7C3;border-left-color:var(--risk);color:#7D1A14}
+  .box.ok{background:var(--okbg);border-color:#BFE3D5;border-left-color:var(--ok);color:#155F47}
+  .box b{display:block;margin-bottom:4px}
+  .steps{list-style:none;padding:0;counter-reset:s;margin:0 0 20px}
+  .steps>li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:18px;color:var(--ink70)}
+  .steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:29px;height:29px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+  .steps>li b{display:block;color:var(--navy);font-size:15.5px;margin-bottom:2px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card h4{margin-top:0}
+  .card p:last-child{margin-bottom:0}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--blue50);color:var(--blue700);margin-right:6px}
+  .pill.req{background:var(--riskbg);color:var(--risk)}
+  .pill.opt{background:var(--mist);color:var(--ink60)}
+  .pill.you{background:var(--warnbg);color:var(--warn)}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:10px}
+  nav.toc h3{margin:0 0 10px;font-size:.82rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink50)}
+  nav.toc ol{margin:0;padding-left:1.1rem;font-size:14.5px}
+  nav.toc li{margin-bottom:5px}
+  nav.toc a{text-decoration:none}
+  nav.toc a:hover{text-decoration:underline}
+  hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+  .foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink50)}
+  @media (max-width:680px){.grid2{grid-template-columns:1fr}}
+  @media print{
+    body{background:#fff}header.top{background:#fff;color:#000;padding:0 0 12px;border-bottom:2px solid #000}
+    h1,.brandline b{color:#000}.brandline span{color:#333}pre{background:#f4f4f4;color:#000;border:1px solid #ccc}
+    h2{page-break-after:avoid}.steps>li,.card,table{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="shell">
+    <div class="brandline">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2F80FF"/><stop offset="100%" stop-color="#0B1F3A"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#g)" stroke="#2F80FF" stroke-opacity=".5"/><path d="M12 26.5v-6.8M20 26.5V13M28 26.5v-9.6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M9.5 30.5h21" stroke="#FFB020" stroke-width="2.4" stroke-linecap="round"/><circle cx="20" cy="10.2" r="2.1" fill="#FFB020"/></svg>
+      <div><b>DataSattva</b><span>The clearer side of data</span></div>
+    </div>
+    <h1>Deployment, cutover and editing guide</h1>
+    <p class="sub">Everything needed to replace the existing live website with this build, host it on Vercel, and keep it updated afterwards — including where the placeholder data lives and how to change it safely.</p>
+  </div>
+</header>
+
+<div class="shell">
+
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#before">Before you start — what you need in hand</a></li>
+    <li><a href="#how">How this build is structured (and why it deploys cleanly)</a></li>
+    <li><a href="#deploy">Step-by-step: deploy to Vercel</a></li>
+    <li><a href="#cutover">Step-by-step: replace the existing live site</a></li>
+    <li><a href="#editing">Making future edits — the content map</a></li>
+    <li><a href="#workflows">Three editing workflows (pick one)</a></li>
+    <li><a href="#placeholders">Placeholder data: exactly what to fill in</a></li>
+    <li><a href="#forms">Making the contact form deliver email</a></li>
+    <li><a href="#postlaunch">Post-launch checklist</a></li>
+    <li><a href="#trouble">Troubleshooting</a></li>
+    <li><a href="#hosting">Appendix: hosting somewhere other than Vercel</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ 1 -->
+<h2 id="before">1 · Before you start</h2>
+<p>You need four things. Two of them only you can provide.</p>
+<table>
+  <thead><tr><th>What</th><th>Why</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Vercel account</strong> with access to the team/project that currently serves the live site</td><td>So the new build can replace it at the same domain without breaking anything else</td><td><span class="pill you">You</span></td></tr>
+    <tr><td><strong>Domain registrar / DNS access</strong> (GoDaddy, Cloudflare, Route 53, Hostinger…)</td><td>Only needed if the current site is <em>not</em> hosted on Vercel — the domain's DNS records have to be repointed</td><td><span class="pill you">You</span></td></tr>
+    <tr><td><strong>The code</strong> — the <code>ds/</code> folder</td><td>This is the whole site: content, styles, build script</td><td><span class="pill">Ready</span></td></tr>
+    <tr><td><strong>Contact details</strong> for the placeholders (email, phone, address, legal entity)</td><td>Otherwise the site publishes a reserved <code>.example</code> address</td><td><span class="pill you">You</span></td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <b>One decision to make before you deploy</b>
+  Decide whether the contact form should <em>email you</em> or simply <em>validate and acknowledge</em>. Vercel cannot write to a local file, so a form that does nothing is the default until you connect a delivery channel (see <a href="#forms">section 8</a> — it takes about 25 minutes with Zoho ZeptoMail).
+</div>
+
+<!-- ============================================================ 2 -->
+<h2 id="how">2 · How this build is structured</h2>
+<p>It is important to understand one thing, because it determines how you edit it later:</p>
+<div class="box">
+  <b>This is a static site generator, not a CMS and not a WordPress-style app.</b>
+  Running <code>npm run build</code> reads the content files in <code>src/data/</code> and writes plain HTML into <code>dist/</code>. Vercel publishes <code>dist/</code> and runs one serverless function for the contact form. There is no database to maintain and no plugins to update.
+</div>
+<table>
+  <thead><tr><th>Folder / file</th><th>What it is</th></tr></thead>
+  <tbody>
+    <tr><td><code>src/data/site.js</code></td><td>Brand name, tagline, navigation, footer, <strong>contact details</strong>, CTA wording</td></tr>
+    <tr><td><code>src/data/services.js</code></td><td>All ten advisory services — index cards and detail pages</td></tr>
+    <tr><td><code>src/data/regulatory.js</code></td><td>The DPDP knowledge page: commencement stages, roles, obligations, challenges, glossary, sources</td></tr>
+    <tr><td><code>src/data/insights.js</code></td><td>All articles and their categories</td></tr>
+    <tr><td><code>src/data/assessment.js</code></td><td>The assessment questions, weights, scoring rules and next steps</td></tr>
+    <tr><td><code>src/pages/</code></td><td>One file per page — layout and wording of the page itself</td></tr>
+    <tr><td><code>src/styles/main.css</code></td><td>Colours, typography, spacing — the whole design system</td></tr>
+    <tr><td><code>api/enquiries.js</code></td><td>The Vercel serverless contact endpoint</td></tr>
+    <tr><td><code>build.mjs</code></td><td>Generates the site, sitemap, robots.txt and the standalone assessment</td></tr>
+    <tr><td><code>vercel.json</code></td><td>Build settings, security headers, redirects</td></tr>
+    <tr><td><code>dist/</code></td><td><strong>Generated. Never edit by hand</strong> — it is rebuilt on every deploy</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ 3 -->
+<h2 id="deploy">3 · Deploy to Vercel — step by step</h2>
+
+<h3>3.1 Put the code in Git</h3>
+<p>Vercel deploys from a Git repository (or from the CLI — both are covered). Choose one.</p>
+
+<h4>Option A — GitHub (recommended; gives you web-based editing later)</h4>
+<ol class="steps">
+  <li><b>Create a private repository</b> on GitHub called <code>datasattva-website</code>. Private is fine; Vercel can read private repos.</li>
+  <li><b>Push the folder</b> from your machine, inside <code>ds/</code>:
+<pre><code>git init
+git add .
+git commit -m "DataSattva website — initial build"
+git branch -M main
+git remote add origin https://github.com/&lt;your-org&gt;/datasattva-website.git
+git push -u origin main</code></pre>
+  <code>.gitignore</code> already excludes <code>node_modules</code>, <code>dist</code>, <code>data</code> and <code>.env</code>, so no secrets or build output are committed.</li>
+  <li><b>Confirm <code>.env</code> was not pushed.</b> Open the repo on GitHub and check that no <code>.env</code> file is listed. Only <code>.env.example</code> should be there.</li>
+</ol>
+
+<h4>Option B — no Git at all</h4>
+<p>Install the CLI and deploy straight from the folder. You lose the web-editing workflow and the deploy history is harder to audit, but it works:</p>
+<pre><code>npm i -g vercel
+cd ds
+vercel login
+vercel --prod</code></pre>
+
+<h3>3.2 Create the Vercel project</h3>
+<ol class="steps">
+  <li><b>Sign in to Vercel</b> and click <strong>Add New → Project</strong>.</li>
+  <li><b>Import the repository</b> you just pushed. If it is not listed, click <em>Adjust GitHub App Permissions</em> and grant access.</li>
+  <li><b>Leave the framework preset as “Other”.</b> <code>vercel.json</code> already supplies the build settings:
+    <table style="margin-top:10px">
+      <tbody>
+        <tr><td>Build command</td><td><code>npm run vercel-build</code></td></tr>
+        <tr><td>Output directory</td><td><code>dist</code></td></tr>
+        <tr><td>Install command</td><td><code>npm install</code> (default)</td></tr>
+        <tr><td>Node version</td><td>18.x or 20.x — either is fine</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li><b>Do not click Deploy yet.</b> Add the environment variables first (next step), otherwise the production build will deliberately fail and tell you what is missing.</li>
+</ol>
+
+<h3>3.3 Add environment variables</h3>
+<p>In the import screen (or later under <strong>Settings → Environment Variables</strong>), add these. Set the scope to <strong>Production</strong> and <strong>Preview</strong> for all of them.</p>
+
+<table>
+  <thead><tr><th>Variable</th><th>Example value</th><th>Required</th></tr></thead>
+  <tbody>
+    <tr><td><code>SITE_URL</code></td><td><code>https://www.datasattva.com</code></td><td><span class="pill req">Required</span> canonical URLs, sitemap, social cards</td></tr>
+    <tr><td><code>DS_CONTACT_EMAIL</code></td><td><code>hello@datasattva.com</code></td><td><span class="pill req">Required</span> published on the contact page</td></tr>
+    <tr><td><code>DS_CONTACT_PHONE</code></td><td><code>+91 80 1234 5678</code> — or leave empty to publish none</td><td><span class="pill opt">Optional</span></td></tr>
+    <tr><td><code>DS_OFFICE</code></td><td><code>Bengaluru, India</code></td><td><span class="pill opt">Optional</span></td></tr>
+    <tr><td><code>DS_LINKEDIN</code></td><td><code>https://www.linkedin.com/company/datasattva</code></td><td><span class="pill opt">Optional</span></td></tr>
+    <tr><td><code>ZEPTOMAIL_SEND_TOKEN</code></td><td>from ZeptoMail (Mail Agent → SMTP/API)</td><td><span class="pill req">Required</span> email delivery — see <a href="#forms">section 8</a></td></tr>
+    <tr><td><code>ZEPTOMAIL_API_HOST</code></td><td><code>api.zeptomail.in</code></td><td><span class="pill opt">Optional</span> region of your ZeptoMail account</td></tr>
+    <tr><td><code>RESEND_API_KEY</code></td><td><code>re_xxxxxxxxxxxx</code></td><td><span class="pill opt">For email</span> see <a href="#forms">section 8</a></td></tr>
+    <tr><td><code>ENQUIRY_TO_EMAIL</code></td><td><code>hello@datasattva.com</code> (comma-separate for several)</td><td><span class="pill req">Required</span> where enquiries are delivered</td></tr>
+    <tr><td><code>ENQUIRY_FROM_EMAIL</code></td><td><code>DataSattva Website &lt;website@datasattva.com&gt;</code></td><td><span class="pill req">Required</span> must be on the verified domain</td></tr>
+    <tr><td><code>ENQUIRY_WEBHOOK_URL</code></td><td>Zapier / Make / CRM inbound hook</td><td><span class="pill opt">Alternative to email</span></td></tr>
+    <tr><td><code>ENQUIRY_WEBHOOK_TOKEN</code></td><td>Bearer token for that webhook, if it needs one</td><td><span class="pill opt">Optional</span></td></tr>
+  </tbody>
+</table>
+
+<div class="box">
+  <b>Why the build blocks itself</b>
+  <code>npm run vercel-build</code> refuses to produce a <em>Production</em> build if <code>SITE_URL</code> is missing or <code>DS_CONTACT_EMAIL</code> is still a <code>.example</code> address. This is on purpose: it stops a placeholder ever appearing on the live site. Preview and local builds are unaffected.
+</div>
+
+<h3>3.4 First deploy</h3>
+<ol class="steps">
+  <li><b>Click Deploy.</b> The build takes roughly 30–60 seconds.</li>
+  <li><b>Open the generated URL</b> (<code>datasattva-website.vercel.app</code> or similar). Everything except the domain is now testable.</li>
+  <li><b>Run this verification list</b> before touching the domain:
+
+    <table style="margin-top:10px">
+      <thead><tr><th>Check</th><th>Expected</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code> loads over HTTPS</td><td>Homepage, header sticky, fonts rendering in Montserrat + Inter</td></tr>
+        <tr><td><code>/services/third-party-privacy-risk-management/</code></td><td>A deep page — confirms nested routes work</td></tr>
+        <tr><td><code>/readiness-assessment/</code> → answer 12 questions</td><td>Score ring animates; download produces a .txt summary</td></tr>
+        <tr><td><code>/contact/</code> → submit empty</td><td>Field-level errors, no page reload</td></tr>
+        <tr><td><code>/contact/</code> → submit valid</td><td>Green success panel with a <code>DS-YYYY-XXXXXXXX</code> reference</td></tr>
+        <tr><td><code>/sitemap.xml</code></td><td>Lists ~26 URLs with your domain</td></tr>
+        <tr><td><code>/robots.txt</code></td><td>Points at your sitemap</td></tr>
+        <tr><td><code>/api/enquiries</code> in a browser</td><td><code>405 Method not allowed</code> — this is correct, it only accepts POST</td></tr>
+        <tr><td>Resize the window narrow</td><td>Nav collapses to <em>Menu</em> below ~1180 px</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li><b>Check Vercel → Deployments → your deployment → Functions → Logs</b> after submitting the test form. You should see an <code>enquiry</code> log line with the reference. If email is configured you will also see <code>emailSent:true</code>.</li>
+</ol>
+
+<div class="box ok">
+  <b>Deploy is now repeatable</b>
+  Every future <code>git push</code> to <code>main</code> triggers a new Production deploy; pushes to other branches produce Preview URLs you can review before merging.
+</div>
+
+<!-- ============================================================ 4 -->
+<h2 id="cutover">4 · Replace the existing live site</h2>
+<p>Two scenarios. Pick the one that matches where the current site is hosted.</p>
+
+<h3>Scenario A — the current site is also on Vercel</h3>
+<p>This is the cleanest case. The domain is already attached to a Vercel project; you are swapping which project serves it.</p>
+<ol class="steps">
+  <li><b>Note the current setup first.</b> In the old project: <em>Settings → Domains</em> (write down the exact domain and whether it is <code>www</code>, apex or both) and <em>Settings → Environment Variables</em> (copy anything the old site depends on for its own reasons — not needed by the new site, but keep the record).</li>
+  <li><b>Add the domain to the new project.</b> (Because the domain is already attached to a Vercel project, Vercel will offer to <em>move</em> it — accept. No Namecheap change is needed. See <code>docs/zoho-mail-and-live-site-guide.html</code> for the plain-language version.) New project → <em>Settings → Domains → Add</em> → enter <code>www.datasattva.com</code> (and <code>datasattva.com</code> if both are used).</li>
+  <li><b>Vercel will warn that the domain is in use by another project.</b> It offers to move it — accept. This is instantaneous and does not require DNS changes.</li>
+  <li><b>If Vercel asks about DNS records,</b> leave them alone; they are already correct because the domain was already on Vercel.</li>
+  <li><b>Set the primary domain.</b> In <em>Settings → Domains</em>, pick either <code>www</code> or the apex as primary and let Vercel redirect the other. Whatever you choose must match your <code>SITE_URL</code> variable — update it and redeploy if they differ.</li>
+  <li><b>Verify</b> using the checklist in <a href="#verify">4.3</a>.</li>
+  <li><b>Keep the old project for two weeks.</b> Do not delete it — it is your instant rollback. Its previous deployment is a one-click restore.</li>
+</ol>
+
+<h3>Scenario B — the current site is hosted elsewhere (shared hosting, Wix, WordPress, GoDaddy, an agency server)</h3>
+<ol class="steps">
+  <li><b>Attach the domain to the new Vercel project</b> as above (<em>Settings → Domains → Add</em>). Vercel will show the DNS records it needs. Typical values:
+    <table style="margin-top:10px">
+      <thead><tr><th>Record</th><th>Host</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td><code>@</code></td><td><code>76.76.21.21</code></td></tr>
+        <tr><td>CNAME</td><td><code>www</code></td><td><code>cname.vercel-dns.com</code></td></tr>
+      </tbody>
+    </table>
+    <strong>Always use the exact values Vercel displays</strong> — they are per-project and can change.
+  </li>
+  <li><b>Lower the TTL on your existing records</b> to 300 seconds (5 minutes) about an hour before you switch. This makes a rollback fast if something goes wrong.</li>
+  <li><b>Before changing DNS, take a backup of the old site.</b> Download the files (FTP/cPanel) or export the WordPress/Wix content. Record any URLs that currently rank in Google — you may want redirects.</li>
+  <li><b>Update the DNS records at your registrar</b> — replace the old A/CNAME values with Vercel's. Do this at a low-traffic time.</li>
+  <li><b>Wait for propagation.</b> Usually 5–60 minutes; up to 24 hours in worst cases. Vercel shows <em>Valid Configuration</em> when it sees the new records.</li>
+  <li><b>SSL is automatic.</b> Vercel issues a Let's Encrypt certificate once DNS resolves. Nothing to buy or install.</li>
+  <li><b>Point the old URLs at the new ones.</b> If the previous site had pages with different addresses, add redirects to <code>vercel.json</code> so existing links and search results do not break — for example:
+<pre><code>"redirects": [
+  { "source": "/about-us", "destination": "/about/", "permanent": true },
+  { "source": "/privacy-policy", "destination": "/privacy/", "permanent": true }
+]</code></pre>
+    Add them, commit, and Vercel redeploys. Redirects already included cover <code>/home</code>, <code>/about</code>, <code>/services</code>, <code>/contact</code>, <code>/insights</code>, <code>/assessment</code> and <code>/dpdp</code> without the trailing slash.
+  </li>
+  <li><b>Keep the old hosting paid and reachable for 30 days.</b> Do not cancel it or delete files on day one.</li>
+</ol>
+
+<div class="box stop">
+  <b>Do not skip this</b>
+  Do not change nameservers unless you intend to move DNS management to Vercel entirely. Changing only the A and CNAME records is enough, keeps your current email (MX) records intact, and is far easier to undo. If you do move nameservers, copy every existing MX, TXT and SPF record across first — otherwise email to <em>@datasattva.com</em> will stop working.
+</div>
+
+<h3 id="verify">4.3 Verification after cutover</h3>
+<ul>
+  <li><code>https://www.datasattva.com</code> and <code>https://datasattva.com</code> both load the new site, one redirecting to the other.</li>
+  <li>The padlock shows a valid certificate (issued to your domain, not to <code>*.vercel.app</code>).</li>
+  <li>View source → the <code>&lt;link rel="canonical"&gt;</code> shows your real domain, not <code>.vercel.app</code> or <code>.example</code>. <strong>If it does not, <code>SITE_URL</code> is wrong</strong> — fix it, redeploy.</li>
+  <li><code>https://www.datasattva.com/sitemap.xml</code> shows your domain in every <code>&lt;loc&gt;</code>.</li>
+  <li>Submit a test enquiry and confirm it arrives (see <a href="#forms">section 8</a>).</li>
+  <li>Open the site on a phone, not just a narrow window.</li>
+  <li>Check email to your own domain still arrives — proof the MX records were untouched.</li>
+</ul>
+
+<h3>4.4 Rollback, if needed</h3>
+<ul>
+  <li><strong>Vercel-only issue:</strong> <em>Deployments → pick the previous working deployment → ⋯ → Promote to Production</em>. Live in seconds.</li>
+  <li><strong>Domain issue:</strong> restore the old DNS values at your registrar (that is why you lowered the TTL) or move the domain back to the old Vercel project.</li>
+</ul>
+
+<!-- ============================================================ 5 -->
+<h2 id="editing">5 · Making future edits — the content map</h2>
+<p>Find what you want to change in the left column, edit the file in the right column, then commit. That is the whole workflow.</p>
+
+<table>
+  <thead><tr><th>I want to change…</th><th>Edit this</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Contact email, phone, address, LinkedIn</td><td><code>src/data/site.js</code> → <code>contact</code></td><td>Or set the <code>DS_*</code> env vars in Vercel, which override the file. Env vars are cleaner because they survive a code edit.</td></tr>
+    <tr><td>Navigation labels or order</td><td><code>src/data/site.js</code> → <code>nav</code></td><td>Each item has <code>label</code> (full) and <code>short</code> (used in the header on narrower screens).</td></tr>
+    <tr><td>Footer columns and the legal disclaimer</td><td><code>src/data/site.js</code> → <code>footer</code></td><td>Keep the disclaimer — it is the professional-positioning statement.</td></tr>
+    <tr><td>Button and CTA wording</td><td><code>src/data/site.js</code> → <code>ctas</code></td><td>Used across all pages, so change once.</td></tr>
+    <tr><td>A service's title, description, deliverables, FAQ</td><td><code>src/data/services.js</code></td><td>One object per service; the index card and the detail page both read from it.</td></tr>
+    <tr><td>Add an eleventh service</td><td><code>src/data/services.js</code></td><td>Copy an existing object, give it a new <code>slug</code> and the next <code>letter</code>, pick an <code>icon</code>. The page and its card appear on rebuild.</td></tr>
+    <tr><td>Anything on the DPDP knowledge page</td><td><code>src/data/regulatory.js</code></td><td>Commencement stages, roles, the fourteen obligations, challenges, glossary, and the <strong>sources</strong> list.</td></tr>
+    <tr><td>The regulatory "verified on" date</td><td><code>src/data/site.js</code> → <code>regulatoryStatus.verifiedOn</code></td><td>Update it every time you review the regulatory content, and update <code>src/data/regulatory.js</code> at the same time.</td></tr>
+    <tr><td>An article, or add a new one</td><td><code>src/data/insights.js</code></td><td>See the worked example in 5.1 below.</td></tr>
+    <tr><td>Assessment questions, weights or scoring</td><td><code>src/data/assessment.js</code></td><td>Adding a question automatically rebalances the maximum score. See 5.2.</td></tr>
+    <tr><td>Homepage wording and section order</td><td><code>src/pages/home.js</code></td><td>Sections are sequential blocks; move a block to reorder the page.</td></tr>
+    <tr><td>About page narrative</td><td><code>src/pages/about.js</code></td><td>Includes the "what we do not claim" section — keep it.</td></tr>
+    <tr><td>Privacy notice / terms</td><td><code>src/pages/privacy.js</code>, <code>src/pages/terms.js</code></td><td><strong>Must be updated if you add analytics, a CRM or any third-party script.</strong> Have counsel review both before launch.</td></tr>
+    <tr><td>Colours, fonts, spacing</td><td><code>src/styles/main.css</code> → the <code>:root</code> block</td><td>Changing the palette means editing variables, not pages. Note the blue used for text links (<code>--blue-700</code>) is darker than the brand blue for contrast.</td></tr>
+    <tr><td>Page titles and meta descriptions</td><td>At the top of each file in <code>src/pages/</code> — the <code>pageHead({...})</code> call</td><td>Keep titles under ~60 characters and descriptions ~150–160.</td></tr>
+    <tr><td>Redirects, security headers, cache rules</td><td><code>vercel.json</code></td><td>Invalid JSON fails the deploy — mind the commas.</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <b>Never edit <code>dist/</code></b>
+  It is deleted and regenerated on every build. Any hand-edit there is lost on the next deploy.
+</div>
+
+<h3>5.1 Worked example — publishing a new article</h3>
+<p>Open <code>src/data/insights.js</code>, find the <code>insights</code> array, and append an object like this before the closing <code>];</code>:</p>
+<pre><code>{
+  slug: 'dpdp-consent-notice-checklist',      // becomes /insights/dpdp-consent-notice-checklist/
+  title: 'A consent and notice checklist before May 2027',
+  category: 'consent-management',             // must match a slug in insightCategories
+  draft: false,                               // false removes the "Draft content" badge
+  author: 'Ananya Rao',
+  date: '2026-11-20',                         // ISO date
+  readingTime: '6 min read',
+  excerpt: 'Six checks that catch most notice and consent problems before they become findings.',
+  lede: 'One opening paragraph, shown larger at the top of the article.',
+  blocks: [
+    { type: 'h2', text: 'Start at the collection point' },
+    { type: 'p', text: 'Body paragraph. Simple HTML entities work (&amp;mdash; etc.).' },
+    { type: 'ul', items: ['First point', 'Second point'] },
+    { type: 'callout', title: 'Field-tested check', text: 'A highlighted aside.' },
+    { type: 'quote', text: 'An optional pull quote.' },
+  ],
+},</code></pre>
+<p>Commit. The article page, its card on <code>/insights/</code>, its category listing, the three homepage article cards and the sitemap entry all appear automatically.</p>
+
+<h3>5.2 Worked example — changing an assessment question</h3>
+<p>In <code>src/data/assessment.js</code>, each question looks like this:</p>
+<pre><code>{
+  id: 'q5',
+  area: 'Consent',
+  weight: 3,                       // 1–3; 3 = foundational
+  question: 'How is consent captured, recorded and withdrawn across your digital channels?',
+  why: 'Shown under the question and reused as the finding text in the results.',
+  service: 'consent-and-privacy-notice-frameworks',   // which service the finding links to
+  options: [
+    { label: 'Consent is bundled into terms or pre-ticked', score: 0 },
+    …
+  ],
+}</code></pre>
+<ul>
+  <li>Wording changes are safe. <strong>Do not change <code>id</code> values</strong> for existing questions — the option weighting and the results logic key off them.</li>
+  <li>Higher <code>weight</code> = more influence on the score and a higher chance of a Critical gap rating.</li>
+  <li>If you add a question, update the "<em>0 of 12 answered</em>" label and the "12 questions" wording — search for <code>of 12</code> in <code>src/pages/assessment.js</code> and <code>src/pages/assessment-embed.js</code>.</li>
+</ul>
+
+<!-- ============================================================ 6 -->
+<h2 id="workflows">6 · Three editing workflows</h2>
+<div class="grid2">
+  <div class="card">
+    <h4>A · GitHub in the browser <span class="pill opt">Easiest</span></h4>
+    <p>Open the repo on GitHub, press <code>.</code> (full stop) on your keyboard — it opens a full VS Code in the browser. Edit the file, commit to <code>main</code>, and Vercel deploys automatically in about a minute. No installation, works on any machine, nothing to update.</p>
+    <p><strong>Best for:</strong> copy edits, new articles, contact details, service wording.</p>
+  </div>
+  <div class="card">
+    <h4>B · Local development <span class="pill">Most control</span></h4>
+    <p>Clone the repo, then:</p>
+<pre style="margin-bottom:10px"><code>npm install
+npm run dev      # preview at localhost:8080, rebuilds on save
+npm run build    # regenerate dist/
+git push</code></pre>
+    <p><strong>Best for:</strong> layout changes, adding pages, design work. Requires Node 18+.</p>
+  </div>
+</div>
+<div class="box">
+  <b>C · A headless CMS, if non-technical editors will maintain it</b>
+  If several people need to publish without touching code, the content files can be swapped for a CMS (Sanity, Contentful, Storyblok) — the data shapes in <code>src/data/</code> are already clean objects, so the change is contained to the build script. This is a project in itself; ask if you want a scope and estimate.
+</div>
+
+<h4>Before every push, run these two checks locally (30 seconds)</h4>
+<pre><code>npm run build          # regenerate the site
+npm run check:links    # broken links, duplicate titles, missing meta, sitemap</code></pre>
+
+<!-- ============================================================ 7 -->
+<h2 id="placeholders">7 · Placeholder data — exactly what to fill in</h2>
+<p>Nothing on the site is invented. Where a fact was not supplied, the build either omits it, states that it is unavailable, or uses an obviously reserved placeholder. Here is the complete list.</p>
+
+<table>
+  <thead><tr><th>Placeholder</th><th>Where it appears</th><th>Where to set it</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>contact@datasattva.example</code></td>
+      <td>Contact page, footer of the privacy notice, article sidebars, "questions about this article"</td>
+      <td>Env var <code>DS_CONTACT_EMAIL</code>, or <code>src/data/site.js</code> → <code>contact.email</code></td>
+    </tr>
+    <tr>
+      <td>Telephone — currently <em>not published</em>; the contact page says a number has not been supplied</td>
+      <td><code>/contact/</code> sidebar</td>
+      <td>Env var <code>DS_CONTACT_PHONE</code>, or <code>site.js</code> → <code>contact.phone</code>. Leave empty to keep it unpublished.</td>
+    </tr>
+    <tr>
+      <td>Office — currently "Bengaluru, India" with a note that a registered address is pending</td>
+      <td><code>/contact/</code> sidebar, footer</td>
+      <td><code>DS_OFFICE</code>, or <code>site.js</code> → <code>contact.office</code></td>
+    </tr>
+    <tr>
+      <td><code>[Legal entity name to be confirmed]</code></td>
+      <td>Footer (hidden from view), privacy notice §1, terms §1</td>
+      <td><code>site.js</code> → <code>legalEntityPlaceholder</code>, plus <code>src/pages/privacy.js</code> and <code>src/pages/terms.js</code></td>
+    </tr>
+    <tr>
+      <td>Data Protection Officer / grievance contact</td>
+      <td>Privacy notice §1 and §8</td>
+      <td><code>src/pages/privacy.js</code></td>
+    </tr>
+    <tr>
+      <td>Hosting region and cross-border transfer statement</td>
+      <td>Privacy notice §5</td>
+      <td><code>src/pages/privacy.js</code> — state the Vercel region you choose (e.g. Mumbai <code>bom1</code>) and any onward transfers</td>
+    </tr>
+    <tr>
+      <td>Governing-law jurisdiction</td>
+      <td>Terms §11</td>
+      <td><code>src/pages/terms.js</code></td>
+    </tr>
+    <tr>
+      <td>Article authors and publication dates — currently "Author to be confirmed" / "Publication date pending", with a visible <em>Draft content</em> badge</td>
+      <td>All eight articles and the insights index</td>
+      <td><code>src/data/insights.js</code> — set <code>author</code>, <code>date</code> and <code>draft: false</code></td>
+    </tr>
+    <tr>
+      <td>Client names, testimonials, certifications, awards, years of experience, headcount</td>
+      <td>Deliberately absent</td>
+      <td>Nothing to remove. If you want these, send verified details and they will be added — do not invent them.</td>
+    </tr>
+    <tr>
+      <td>Social sharing image</td>
+      <td>Open Graph / Twitter cards</td>
+      <td><code>dist/assets/og-image.svg</code> is generated at build. Some platforms prefer a raster image — replace with a 1200×630 JPG and update the two <code>og:image</code> tags in <code>src/lib/layout.js</code>.</td>
+    </tr>
+    <tr>
+      <td>Analytics</td>
+      <td>Not installed at all</td>
+      <td>If you add Plausible/GA4, you must also update <code>src/pages/privacy.js</code> §3 and the Content-Security-Policy in <code>vercel.json</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="box ok">
+  <b>Fastest route for the essentials</b>
+  Three environment variables — <code>DS_CONTACT_EMAIL</code>, <code>DS_CONTACT_PHONE</code>, <code>DS_OFFICE</code> — resolve most of the visible placeholders without editing any code. Redeploy after changing them (Vercel does not rebuild automatically when env vars change).
+</div>
+
+<!-- ============================================================ 8 -->
+<h2 id="forms">8 · Making the contact form deliver email</h2>
+<p>Both the contact form and the optional "send my assessment result" form post to <code>api/enquiries.js</code>, which validates, checks a honeypot, applies a best-effort throttle, and then hands the record to <code>src/lib/email.js</code>. Nothing is stored on Vercel (no persistent disk), so <strong>a delivery channel is mandatory</strong> — the production build refuses to run without one.</p>
+
+<div class="box warn">
+  <b>This domain uses Zoho Mail</b>
+  The plain-language walkthrough for the actual stack (Vercel + Namecheap + Zoho) is <code>docs/zoho-mail-and-live-site-guide.html</code>. Read that one if you are the person clicking the buttons; this section is the technical reference behind it.
+</div>
+
+<h3>ZeptoMail — the Zoho route (recommended here, about 25 minutes)</h3>
+<ol class="steps">
+  <li><b>Create a ZeptoMail account</b> at <code>zoho.com/zeptomail</code>, signing in with the same Zoho account as Zoho Mail. Pick the same data-centre region as your mailbox (India → <code>api.zeptomail.in</code>). Free tier: 10,000 emails, far more than a brochure site needs.</li>
+  <li><b>Add a Mail Agent → add and verify the sending domain.</b> ZeptoMail shows a TXT, a CNAME and usually a DKIM TXT. Add them at <strong>Namecheap → Advanced DNS</strong> (do not move nameservers). If an SPF record already exists for Zoho Mail, <em>edit</em> it to include ZeptoMail rather than adding a second one — two SPF records invalidate each other.</li>
+  <li><b>Create a Send Mail Token</b> (Mail Agent → SMTP/API → Create Send Mail Token). It is displayed once; store it in a password manager.</li>
+  <li><b>Vercel → Settings → Environment Variables</b> (tick Production, Preview and Development):
+<pre><code>ZEPTOMAIL_SEND_TOKEN    = (the send mail token)
+ZEPTOMAIL_API_HOST      = api.zeptomail.in      # .eu / api.zeptomail.com for other DCs
+ENQUIRY_TO_EMAIL        = hello@datasattva.com
+ENQUIRY_FROM_EMAIL      = DataSattva Website &lt;website@datasattva.com&gt;
+SITE_URL                = https://www.datasattva.com
+# optional:
+ZEPTOMAIL_BOUNCE_ADDRESS = bounce@datasattva.com</code></pre>
+    <code>ENQUIRY_FROM_EMAIL</code> must be on the verified domain. The address does not need to be a readable mailbox.</li>
+  <li><b>Redeploy.</b> Deployments → ⋯ → Redeploy. Environment variable changes only take effect on a new deployment.</li>
+  <li><b>Submit a test enquiry.</b> The email arrives at <code>ENQUIRY_TO_EMAIL</code> with the enquirer's address as <strong>Reply-To</strong>. Vercel function logs show <code>enquiry-sent</code> with the provider, or <code>enquiry-undelivered</code> with the full record and the reason.</li>
+</ol>
+
+<h3>Other channels</h3>
+<ul>
+  <li><strong>Resend:</strong> same shape — <code>RESEND_API_KEY</code> + <code>ENQUIRY_TO_EMAIL</code> + <code>ENQUIRY_FROM_EMAIL</code>. Only used when <code>ZEPTOMAIL_SEND_TOKEN</code> is absent.</li>
+  <li><strong>SMTP:</strong> <code>SMTP_HOST</code> / <code>SMTP_USER</code> / <code>SMTP_PASS</code> (port 465 = TLS, 587 = STARTTLS). Intended for self-hosted deployments running <code>server.mjs</code>. <strong>Do not use it on Vercel:</strong> SMTP sends can be silently dropped when the function returns, which is exactly why ZeptoMail's HTTP API is used there. Zoho Mail SMTP works fine on a VPS or Render/Railway.</li>
+  <li><strong>Webhook into a CRM or Slack:</strong> <code>ENQUIRY_WEBHOOK_URL</code> (and <code>ENQUIRY_WEBHOOK_TOKEN</code> if required). Combines with any of the above.</li>
+</ul>
+
+<div class="box stop">
+  <b>Failure behaviour — deliberately honest</b>
+  If every configured channel fails, the endpoint logs the complete record (nothing is stored anywhere on Vercel, so the log is the only copy) and returns <strong>HTTP 503</strong> with a message asking the visitor to email directly, quoting their reference. It never shows "thank you" for an enquiry that was not delivered.
+</div>
+
+<h3>Alternatives</h3>
+<ul>
+  <li><strong>Webhook into a CRM or Slack:</strong> set <code>ENQUIRY_WEBHOOK_URL</code> (and <code>ENQUIRY_WEBHOOK_TOKEN</code> if required). The full enquiry is POSTed as JSON — Zapier, Make, HubSpot, Salesforce and Slack incoming webhooks all work.</li>
+  <li><strong>Both:</strong> set both and you get an email and a CRM record.</li>
+  <li><strong>Where do submissions go on Vercel?</strong> Nowhere durably — there is no persistent disk. If you need an archive, use the webhook (to a sheet/database) or add a KV store. The site's privacy notice currently says enquiry records are retained 24 months; keep that statement accurate to whatever you actually build.</li>
+</ul>
+
+<div class="box warn">
+  <b>Spam and rate limits</b>
+  The endpoint has a honeypot field and a best-effort per-instance throttle (8 per 15 minutes). Serverless instances are ephemeral, so this is not a hard limit. If you see spam, enable <strong>Vercel Firewall</strong> (Project → Firewall → rate limit rule on <code>/api/enquiries</code>), or add Cloudflare Turnstile to the form.
+</div>
+
+<!-- ============================================================ 9 -->
+<h2 id="postlaunch">9 · Post-launch checklist</h2>
+<ul>
+  <li>☐ Domain resolves, certificate valid, <code>canonical</code> shows the real domain.</li>
+  <li>☐ Test enquiry received by email, with the reference number.</li>
+  <li>☐ Google Search Console: add the domain property, submit <code>sitemap.xml</code>.</li>
+  <li>☐ Bing Webmaster Tools: submit the sitemap.</li>
+  <li>☐ Old URLs that still receive traffic are redirected in <code>vercel.json</code>.</li>
+  <li>☐ Privacy notice and terms reviewed by counsel; legal entity, DPO and jurisdiction filled in.</li>
+  <li>☐ Decision recorded on analytics, and the privacy notice updated if anything is added.</li>
+  <li>☐ Tested on a real iPhone and a real Android device, not just a narrow browser window.</li>
+  <li>☐ Someone is named as owner of the enquiry inbox, with a response target (the site promises two business days).</li>
+  <li>☐ Diary reminder to re-verify the regulatory content when MeitY notifies any change to commencement dates — and to update <code>regulatoryStatus.verifiedOn</code>.</li>
+  <li>☐ Old hosting kept alive for 30 days, then cancelled.</li>
+</ul>
+
+<!-- ============================================================ 10 -->
+<h2 id="trouble">10 · Troubleshooting</h2>
+<table>
+  <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td>Build fails: "Production build blocked. Missing environment variables"</td><td><code>SITE_URL</code> or <code>DS_CONTACT_EMAIL</code> unset/placeholder</td><td>Add both in Vercel for the Production scope, redeploy</td></tr>
+    <tr><td>Canonical URLs show <code>*.vercel.app</code></td><td><code>SITE_URL</code> wrong at build time</td><td>Correct it, then <em>Redeploy</em> (env changes need a new build)</td></tr>
+    <tr><td>404 on <code>/about</code> (no trailing slash)</td><td>Page built as <code>/about/</code></td><td>Already handled by <code>trailingSlash: true</code>; for other paths add redirects to <code>vercel.json</code></td></tr>
+    <tr><td>Contact form returns 405</td><td>Endpoint opened directly in a browser (GET)</td><td>Expected — it accepts POST only</td></tr>
+    <tr><td>Contact form says "could not be sent"</td><td>Network error or function crash</td><td>Check Vercel → Deployments → Functions → Logs for the stack trace</td></tr>
+    <tr><td>"Could not send" message with a reference</td><td>Every delivery channel failed — check Vercel logs for <code>enquiry-undelivered</code></td><td>Fix <code>ZEPTOMAIL_SEND_TOKEN</code> / verified domain, redeploy (see §8). The logged record still contains the enquiry.</td></tr>
+    <tr><td>Build fails: "No delivery channel"</td><td>No <code>ZEPTOMAIL_SEND_TOKEN</code>, Resend key, SMTP trio or webhook</td><td>Set one, plus <code>ENQUIRY_TO_EMAIL</code>, then redeploy</td></tr>
+    <tr><td>ZeptoMail 401 / invalid token</td><td>Token copied wrong, or region mismatch</td><td>Re-copy the token and confirm <code>ZEPTOMAIL_API_HOST</code> matches your account's region</td></tr>
+    <tr><td>Resend returns 403</td><td><code>ENQUIRY_FROM_EMAIL</code> not on the verified domain</td><td>Use an address on the domain you verified in Resend</td></tr>
+    <tr><td>Fonts fall back to Arial</td><td>Font files failed to load</td><td>Confirm <code>/assets/fonts/inter-latin.woff2</code> returns 200; check the CSP <code>font-src</code></td></tr>
+    <tr><td>Styles missing / unstyled page</td><td>CSS blocked by CSP</td><td>Do not add external stylesheets without extending <code>style-src</code> in <code>vercel.json</code></td></tr>
+    <tr><td>Assessment won't score</td><td>JavaScript disabled</td><td>Expected — a <code>noscript</code> message explains it; <code>/assessment-embed.html</code> is the portable fallback</td></tr>
+    <tr><td>Edits do not appear on the live site</td><td>Committed but not pushed, or push went to a branch</td><td>Check the Vercel deployment list; production deploys come from <code>main</code></td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ 11 -->
+<h2 id="hosting">11 · Appendix — hosting somewhere other than Vercel</h2>
+<p>The site is portable; only the contact endpoint is Vercel-specific.</p>
+<div class="grid2">
+  <div class="card">
+    <h4>Static host + serverless function</h4>
+    <p>Netlify, Cloudflare Pages, Azure Static Web Apps and AWS Amplify all work: publish <code>dist/</code>, and port <code>api/enquiries.js</code> to that platform's function format (the validation logic in <code>src/lib/enquiry.js</code> is framework-agnostic and reused as-is).</p>
+  </div>
+  <div class="card">
+    <h4>Your own Node server</h4>
+    <p><code>npm ci &amp;&amp; npm run build &amp;&amp; node server.mjs</code> serves the site <em>and</em> the contact endpoint from one process, writing enquiries to <code>data/enquiries.ndjson</code>. Requires a host that keeps a process alive — a VPS, Render, Railway or Fly.io — not a static host.</p>
+  </div>
+</div>
+<div class="box">
+  <b>Portable extras</b>
+  <code>dist/assessment-embed.html</code> is a single self-contained file (no external CSS, JS or fonts) that can be embedded on any site with an iframe, or emailed to a client. It runs the same twelve questions and the same scoring model.
+</div>
+
+<p class="foot">
+  DataSattva provides data privacy advisory and implementation support, and is not a law firm, regulator or certifying body. This guide covers deployment and maintenance of the website only. Regulatory content on the site reflects the Digital Personal Data Protection Act, 2023 and the Digital Personal Data Protection Rules, 2025 as verified on 4 November 2026, and should be re-checked against the Gazette before being relied on.
+</p>
+
+</div>
+</body>
+</html>
