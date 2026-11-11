@@ -52,7 +52,6 @@ const currentOf = (path) => {
     .find((n) => path === n.href || path.startsWith(n.href));
   if (hit) return hit.href;
   if (path.startsWith('/services')) return '/services/';
-  if (path.startsWith('/insights')) return '/insights/';
   return '';
 };
 

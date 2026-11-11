@@ -6,7 +6,7 @@ import { implementation } from '../data/regulatory.js';
 /* ---------------------------------------------------------------- hero art */
 
 export function heroVisual() {
-  return `<svg viewBox="0 0 560 470" role="img" aria-labelledby="hv-title" xmlns="http://www.w3.org/2000/svg">
+  return `<svg class="hero-diagram" viewBox="0 0 560 470" role="img" aria-labelledby="hv-title" xmlns="http://www.w3.org/2000/svg">
   <title id="hv-title">Diagram: personal data flows from Data Principals through governed processing inside an organisation to third-party processors, with governance, consent, rights, security and retention controls applying throughout.</title>
   <defs>
     <linearGradient id="hv-panel" x1="0" y1="0" x2="1" y2="1">
@@ -33,7 +33,7 @@ export function heroVisual() {
 
   <!-- Data Principals column -->
   <text x="40" y="62" fill="#7FA8E4" font-family="Montserrat,sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.6">DATA PRINCIPALS</text>
-  <g font-family="Inter,sans-serif" font-size="11.5" fill="#DCE8F8">
+  <g class="hv-nodes hv-nodes--in" font-family="Inter,sans-serif" font-size="11.5" fill="#DCE8F8">
     <g><rect x="40" y="76" width="112" height="34" rx="8" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14"/><circle cx="58" cy="93" r="4.5" fill="#FFB020"/><text x="72" y="97">Customers</text></g>
     <g><rect x="40" y="120" width="112" height="34" rx="8" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14"/><circle cx="58" cy="137" r="4.5" fill="#2F80FF"/><text x="72" y="141">Employees</text></g>
     <g><rect x="40" y="164" width="112" height="34" rx="8" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14"/><circle cx="58" cy="181" r="4.5" fill="#6AA8FF"/><text x="72" y="185">Prospects</text></g>
@@ -41,7 +41,7 @@ export function heroVisual() {
   </g>
 
   <!-- flows in -->
-  <g fill="none" stroke="url(#hv-line)" stroke-width="1.6">
+  <g class="hv-flow hv-flow--in" fill="none" stroke="url(#hv-line)" stroke-width="1.6">
     <path d="M152 93 C186 93 186 150 214 168"/>
     <path d="M152 137 C190 137 192 176 214 186"/>
     <path d="M152 181 C190 181 194 200 214 204"/>
@@ -49,7 +49,7 @@ export function heroVisual() {
   </g>
 
   <!-- governance core -->
-  <g>
+  <g class="hv-core">
     <rect x="214" y="86" width="180" height="272" rx="16" fill="url(#hv-panel)" stroke="#2F80FF" stroke-opacity="0.45"/>
     <text x="232" y="112" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.4">Data Fiduciary</text>
     <text x="232" y="127" fill="#7FA8E4" font-family="Inter,sans-serif" font-size="9.5">governance &amp; controls</text>
@@ -74,7 +74,7 @@ export function heroVisual() {
   </g>
 
   <!-- flows out -->
-  <g fill="none" stroke="url(#hv-line)" stroke-width="1.6">
+  <g class="hv-flow hv-flow--out" fill="none" stroke="url(#hv-line)" stroke-width="1.6">
     <path d="M394 160 C424 160 424 142 448 142"/>
     <path d="M394 204 C428 204 428 196 448 196"/>
     <path d="M394 248 C428 248 428 250 448 250"/>
@@ -83,7 +83,7 @@ export function heroVisual() {
 
   <!-- third parties -->
   <text x="448" y="62" fill="#7FA8E4" font-family="Montserrat,sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.6">THIRD PARTIES</text>
-  <g font-family="Inter,sans-serif" font-size="10.5" fill="#DCE8F8">
+  <g class="hv-nodes hv-nodes--out" font-family="Inter,sans-serif" font-size="10.5" fill="#DCE8F8">
     ${[
       ['Cloud', 126],
       ['Processors', 180],
@@ -98,7 +98,7 @@ export function heroVisual() {
   </g>
 
   <!-- review loop -->
-  <path d="M304 358 C304 412 214 412 214 358" fill="none" stroke="#FFB020" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path class="hv-loop" d="M304 358 C304 412 214 412 214 358" fill="none" stroke="#FFB020" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="5 4"/>
   <text x="241" y="404" fill="#FFC44D" font-family="Inter,sans-serif" font-size="9.5">monitor · review · improve</text>
 
   <!-- base plate -->
@@ -106,7 +106,7 @@ export function heroVisual() {
   <g font-family="Inter,sans-serif" font-size="9.5" fill="#8AA0BB">
     <text x="40" y="408">DPDP Act, 2023</text>
     <text x="40" y="424">DPDP Rules, 2025</text>
-    <circle cx="452" cy="404" r="3" fill="#2F80FF" filter="url(#hv-glow)"/>
+    <circle class="hv-pulse" cx="452" cy="404" r="3" fill="#2F80FF" filter="url(#hv-glow)"/>
     <text x="462" y="408">assets</text>
     <circle cx="452" cy="420" r="3" fill="#FFB020"/>
     <text x="462" y="424">controls</text>
@@ -116,35 +116,33 @@ export function heroVisual() {
 
 /* --------------------------------------------------- challenge framework */
 
-const challengeAreas = [
-  ['Customer & employee data', 'Every individual the organisation deals with, in every function.'],
-  ['Collection & processing', 'Where data enters, why it is used, and on what ground.'],
-  ['Consent & notices', 'What people are told, what they accept, and how they stop.'],
-  ['Repositories & applications', 'Systems of record, tools, exports and the spaces between them.'],
-  ['Vendors & processors', 'Personal data that leaves the perimeter and must still be governed.'],
-  ['Sharing & cross-border', 'Recipients, locations and the basis for every transfer.'],
-  ['Retention & deletion', 'How long, decided by whom, and evidenced how.'],
-  ['Rights & requests', 'Access, correction, erasure and grievance handling end to end.'],
-  ['Security & incident response', 'Safeguards that can be evidenced and a response that is rehearsed.'],
-  ['Governance & oversight', 'A named owner, a decision forum and a reporting rhythm.'],
+/* The six obligations, stated as the Act states them. Kept deliberately terse:
+   this is the "what you are actually being asked to do" strip, not a framework. */
+const obligations = [
+  ['Notice', 'Tell people what you collect and why, in language they can read.'],
+  ['Consent', 'Ask before you use it — and make withdrawing as easy as giving.'],
+  ['Rights', 'Answer access, correction and erasure requests, on time.'],
+  ['Security', 'Protect the data, and be able to show how.'],
+  ['Retention', 'Delete it when the purpose is served, and prove you did.'],
+  ['Vendors', 'Govern what processors and partners do with it.'],
 ];
 
 export function challengeFramework() {
-  return `<div class="framework-panel">
-  <div class="challenge-grid">
-    ${challengeAreas
+  return `<div class="framework-panel framework-panel--tight">
+  <div class="obligation-grid">
+    ${obligations
       .map(
-        ([title, body], i) => `<div class="challenge-cell">
-      <p class="challenge-cell__num">${String(i + 1).padStart(2, '0')}</p>
-      <h4>${esc(title)}</h4>
+        ([title, body], i) => `<div class="obligation">
+      <p class="obligation__num">${String(i + 1).padStart(2, '0')}</p>
+      <h3>${esc(title)}</h3>
       <p>${esc(body)}</p>
     </div>`
       )
       .join('')}
   </div>
-  <p class="small muted" style="margin:1.1rem 0 0;display:flex;gap:0.5rem;align-items:flex-start;">
-    <span style="color:var(--blue);flex-shrink:0;margin-top:2px;">${icon('info', 16)}</span>
-    <span>The regulatory text is the shortest part of the work. The longer part is translating each of these areas into ownership, process and evidence inside an organisation that already has other priorities.</span>
+  <p class="framework-note">
+    <span aria-hidden="true">${icon('info', 16)}</span>
+    <span>Six obligations, one operating model. Most programmes stall not on understanding the Act but on translating it into processes, named owners and evidence that survives scrutiny.</span>
   </p>
 </div>`;
 }

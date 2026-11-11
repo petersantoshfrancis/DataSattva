@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to update www.datasattva.com — step by step</title>
+<style>
+  :root{
+    --navy:#0b1f3a; --blue:#0f57cc; --saffron:#ffb020; --ink:#1c2b40; --ink60:#55677f;
+    --line:#dde5ef; --paper:#f7f9fc; --ok:#1c7a5b; --warn:#a2600a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:#fff; color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16.5px; line-height:1.65;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 22px 90px}
+  header.top{
+    background:linear-gradient(165deg,#0b1f3a,#123059 60%,#17457f); color:#fff;
+    padding:44px 0 40px; margin-bottom:34px;
+  }
+  header.top .wrap{padding-bottom:0}
+  header.top h1{font-size:clamp(1.6rem,1.2rem+1.6vw,2.15rem); margin:0 0 10px; line-height:1.2; letter-spacing:-0.01em}
+  header.top p{margin:0; color:rgba(255,255,255,.78); font-size:1rem; max-width:62ch}
+  .badge{
+    display:inline-block; font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--saffron); margin-bottom:14px; padding-left:34px; position:relative;
+  }
+  .badge::before{content:""; position:absolute; left:0; top:50%; width:26px; height:1px; background:var(--saffron); opacity:.75}
+  h2{
+    font-size:1.3rem; margin:44px 0 6px; padding-top:22px; border-top:1px solid var(--line);
+    color:var(--navy); letter-spacing:-0.01em;
+  }
+  h2:first-of-type{border-top:0; padding-top:0; margin-top:10px}
+  h3{font-size:1.02rem; margin:26px 0 8px; color:var(--navy)}
+  p{margin:0 0 12px}
+  ol.steps{counter-reset:s; list-style:none; padding:0; margin:18px 0 6px}
+  ol.steps>li{
+    counter-increment:s; position:relative; padding:0 0 20px 52px; margin:0;
+  }
+  ol.steps>li::before{
+    content:counter(s); position:absolute; left:0; top:1px;
+    width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
+    background:var(--paper); border:1px solid var(--line); color:var(--blue);
+    font-weight:700; font-size:.9rem;
+  }
+  ol.steps>li::after{
+    content:""; position:absolute; left:15.5px; top:36px; bottom:4px; width:1px; background:var(--line);
+  }
+  ol.steps>li:last-child::after{display:none}
+  ol.plain{margin:8px 0 14px 0; padding-left:22px}
+  ol.plain li{margin-bottom:6px}
+  ul.tight{margin:8px 0 16px; padding-left:22px}
+  ul.tight li{margin-bottom:7px}
+  code{
+    background:var(--paper); border:1px solid var(--line); border-radius:5px;
+    padding:1.5px 6px; font-size:.88em; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color:#123; white-space:nowrap;
+  }
+  pre{
+    background:var(--navy); color:#e8eef8; border-radius:10px; padding:16px 18px; overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.86rem; line-height:1.6;
+    margin:12px 0 18px;
+  }
+  pre code{background:none; border:0; padding:0; color:inherit; white-space:pre}
+  .box{
+    border:1px solid var(--line); border-left:3px solid var(--blue); background:var(--paper);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:.96rem;
+  }
+  .box.warn{border-left-color:var(--saffron); background:#fff8ea}
+  .box.ok{border-left-color:var(--ok); background:#e8f5f0}
+  .box strong{color:var(--navy)}
+  table{width:100%; border-collapse:collapse; margin:14px 0 20px; font-size:.94rem}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{background:var(--paper); font-size:.8rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink60)}
+  td code{white-space:normal}
+  .tag{
+    display:inline-block; font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; background:var(--paper); border:1px solid var(--line); color:var(--ink60);
+    vertical-align:middle; margin-left:8px;
+  }
+  .toc{border:1px solid var(--line); border-radius:10px; padding:16px 20px; background:var(--paper); margin:0 0 8px}
+  .toc p{margin:0 0 8px; font-weight:700; color:var(--navy); font-size:.9rem; letter-spacing:.05em; text-transform:uppercase}
+  .toc ol{margin:0; padding-left:20px; font-size:.95rem}
+  .toc li{margin-bottom:4px}
+  a{color:var(--blue)}
+  .check li{list-style:none; position:relative; padding-left:24px}
+  .check{padding-left:0}
+  .check li::before{content:"✓"; position:absolute; left:0; color:var(--ok); font-weight:700}
+  footer.end{margin-top:50px; padding-top:20px; border-top:1px solid var(--line); color:var(--ink60); font-size:.9rem}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="badge">DataSattva · www.datasattva.com</p>
+    <h1>How to update the website</h1>
+    <p>Plain steps for putting the redesign live. Two ways to do it — pick whichever feels comfortable. Both end in the same place: a new version of the site, live in about a minute.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="toc">
+    <p>What's in here</p>
+    <ol>
+      <li>Before you start — what you need</li>
+      <li>Method A — from your computer's Terminal (recommended)</li>
+      <li>Method B — in the browser on github.com (no Terminal)</li>
+      <li>Check your work before pushing</li>
+      <li>If something goes wrong — undo it</li>
+      <li>Common questions</li>
+    </ol>
+  </div>
+
+  <h2>1. Before you start</h2>
+
+  <p>You need two things:</p>
+  <ul class="tight">
+    <li>The folder <strong>datasattva</strong> — the one with <code>package.json</code> inside it. This is your website project.</li>
+    <li>The zip file <strong>homepage-restructure-files.zip</strong> — this holds the ten files you're about to put live.</li>
+  </ul>
+
+  <div class="box">
+    <strong>What's actually changing.</strong> The homepage has been cut down: a shorter challenge section, six advisory boxes instead of ten flat items, "Why DataSattva" in boxes, the graphic moved under the header, and one closing assessment section instead of two. The Insights section is retired — old links to <code>/insights/</code> now say the page is gone, on purpose.
+  </div>
+
+  <h3>The ten files</h3>
+  <table>
+    <tr><th>File</th><th>What it holds</th></tr>
+    <tr><td><code>src/pages/home.js</code></td><td>Homepage layout and copy</td></tr>
+    <tr><td><code>src/lib/components.js</code></td><td>Challenge strip, service boxes, hero graphic</td></tr>
+    <tr><td><code>src/lib/layout.js</code></td><td>Header, footer, closing section</td></tr>
+    <tr><td><code>src/styles/main.css</code></td><td>All colours, spacing and boxes</td></tr>
+    <tr><td><code>src/data/services.js</code></td><td>The ten services and their one-liners</td></tr>
+    <tr><td><code>src/data/site.js</code></td><td>Menu, footer links, button wording</td></tr>
+    <tr><td><code>src/pages/dpdp.js</code></td><td>DPDP Act page</td></tr>
+    <tr><td><code>build.mjs</code></td><td>The build script (Insights removed)</td></tr>
+    <tr><td><code>vercel.json</code></td><td>Redirects, including the retired Insights URLs</td></tr>
+    <tr><td><code>README.md</code></td><td>Project notes</td></tr>
+  </table>
+
+  <h2>2. Method A — from your Terminal <span class="tag">recommended</span></h2>
+
+  <p>This is the reliable way: copy all ten files at once, check the site builds, then push. If anything is wrong, you'll see it before the world does.</p>
+
+  <h3>Step 1 — open Terminal in the project folder</h3>
+  <p>On Mac: open <strong>Terminal</strong> (press ⌘ + Space, type "Terminal", press Enter). Then drag the <strong>datasattva</strong> folder onto the Terminal window and press Enter — that takes you into the right place.</p>
+  <p>On Windows: open the <strong>datasattva</strong> folder, right-click on empty space, choose <strong>Open in Terminal</strong> (or "Git Bash Here").</p>
+  <p>Confirm you are in the right folder — this should print the project's name and its files:</p>
+  <pre><code>ls</code></pre>
+  <p>You should see <code>package.json</code>, <code>src</code>, <code>build.mjs</code> and a few others.</p>
+
+  <h3>Step 2 — make sure your copy is up to date</h3>
+  <pre><code>git pull</code></pre>
+  <p>This fetches anything changed since you last worked on it. If it says "Already up to date" — good.</p>
+
+  <h3>Step 3 — save a copy of the current version (30 seconds, worth it)</h3>
+  <pre><code>git add -A
+git commit -m "Checkpoint before homepage update"</code></pre>
+  <p>If it says "nothing to commit, working tree clean", that's fine — there was nothing outstanding.</p>
+
+  <h3>Step 4 — replace the ten files</h3>
+  <ol class="plain">
+    <li>Unzip <strong>homepage-restructure-files.zip</strong>. You'll get a folder containing <code>src</code>, <code>build.mjs</code>, <code>vercel.json</code> and <code>README.md</code>.</li>
+    <li>Open that folder and the <strong>datasattva</strong> folder side by side.</li>
+    <li>Drag <strong>everything from inside the unzipped folder</strong> into the <strong>datasattva</strong> folder.</li>
+    <li>When your computer asks, choose <strong>Replace</strong> / <strong>Merge</strong> — the new files should overwrite the old ones. Nothing gets deleted, only replaced.</li>
+  </ol>
+
+  <div class="box warn">
+    <strong>Careful:</strong> drag the <em>contents</em> of the unzipped folder, not the folder itself. If you end up with a folder inside your project called <code>homepage-restructure-files</code>, the site won't pick up the changes — delete it and try again with the contents.
+  </div>
+
+  <h3>Step 5 — check it builds</h3>
+  <pre><code>npm install
+npm run build</code></pre>
+  <p>The first time, <code>npm install</code> takes a minute or two. Then you should see:</p>
+  <pre><code>✓ Built 18 pages + 31 files in 40ms → dist/</code></pre>
+  <div class="box ok">
+    <strong>If you see that line, you're good.</strong> If you see a red error instead, stop here — don't push. Send me the error text and I'll fix it.
+  </div>
+
+  <h3>Step 6 — look at it before anyone else does</h3>
+  <pre><code>npm run dev</code></pre>
+  <p>Open <a href="http://localhost:8080">http://localhost:8080</a> in your browser. Check the homepage top to bottom. When you're finished looking, go back to Terminal and press <strong>Ctrl + C</strong> to stop it.</p>
+
+  <h3>Step 7 — send it live</h3>
+  <pre><code>git add -A
+git commit -m "Homepage: trim content, boxes for services and why, one closing section"
+git push</code></pre>
+  <p>That's it. Vercel notices the push automatically and starts building. About 30–60 seconds later:</p>
+  <ol class="plain">
+    <li>Go to <a href="https://vercel.com/dashboard">vercel.com/dashboard</a> and open the <strong>datasattva</strong> project.</li>
+    <li>Wait for the newest deployment to say <strong>Ready</strong>.</li>
+    <li>Open <a href="https://www.datasattva.com">www.datasattva.com</a> and press <strong>Ctrl + Shift + R</strong> (Mac: ⌘ + Shift + R) to force a fresh load.</li>
+  </ol>
+
+  <h2>3. Method B — in the browser, no Terminal</h2>
+
+  <p>Use this if you'd rather not touch Terminal. It's slower — one file at a time, ten times — but it needs nothing installed.</p>
+
+  <h3>Step 1 — open your project on GitHub</h3>
+  <p>Go to <a href="https://github.com">github.com</a>, sign in, and open your <strong>datasattva</strong> repository.</p>
+
+  <h3>Step 2 — for each of the ten files, do this</h3>
+  <ol class="steps">
+    <li>In the file list, click into the folders to reach the file. For example, for the homepage: click <code>src</code> → <code>pages</code> → <code>home.js</code>.</li>
+    <li>Click the <strong>pencil icon</strong> (top right of the file) to edit.</li>
+    <li>Select everything in the editor — <strong>Ctrl + A</strong> (Mac: ⌘ + A) — and delete it.</li>
+    <li>Open the same file from the unzipped folder in any text editor (TextEdit, Notepad — anything). Select all, copy.</li>
+    <li>Paste it into the GitHub editor.</li>
+    <li>Scroll to the bottom, click <strong>Commit changes</strong>.</li>
+    <li>Leave the message as it is, or type <code>Homepage update</code>. Click <strong>Commit changes</strong> again to confirm.</li>
+  </ol>
+
+  <div class="box warn">
+    <strong>Order doesn't matter, but finish all ten.</strong> If you stop halfway, the site will still build, but you'll get a half-styled page — new layout with old spacing, or the reverse. If you have to stop, finish the remaining files later the same day.
+  </div>
+
+  <h3>Step 3 — watch it go live</h3>
+  <p>Each commit starts a new build. After the last one, open <a href="https://vercel.com/dashboard">vercel.com/dashboard</a> and wait for <strong>Ready</strong>, then check <a href="https://www.datasattva.com">www.datasattva.com</a> with a hard refresh.</p>
+
+  <h2>4. Check your work before pushing</h2>
+  <p>Ten things to look at on the homepage once it's live. Takes two minutes:</p>
+  <ul class="check">
+    <li>The graphic animates in under the header when the page loads</li>
+    <li>The headline wraps to two lines, and the orange button is visible without scrolling</li>
+    <li>The challenge section shows six numbered boxes, not a long list</li>
+    <li>Advisory services shows <strong>six</strong> white boxes in two rows of three</li>
+    <li>"View all ten advisory services" sits below them</li>
+    <li>"Why DataSattva" shows three boxes on the navy background</li>
+    <li>The page ends with the assessment section — "How ready is your organisation, really?" — and no "Next step" section after it</li>
+    <li><strong>Insights</strong> is gone from the menu, and the menu has six items</li>
+    <li>Visiting <code>www.datasattva.com/insights/</code> shows a "gone" message, not a broken page</li>
+    <li>On your phone: the menu opens, the boxes stack one per row, buttons are full width</li>
+  </ul>
+
+  <h2>5. If something goes wrong</h2>
+
+  <h3>The build fails on Vercel</h3>
+  <p>Open the failed deployment in Vercel and look at the red text. The most common cause is a file that didn't get replaced properly. Simplest fix: redo Method A, Steps 4–7, being careful to drag the folder <em>contents</em> this time.</p>
+
+  <h3>The site looks wrong, and you want yesterday's version back</h3>
+  <p>Nothing is lost — every past version is kept.</p>
+  <ol class="plain">
+    <li>Go to <a href="https://vercel.com/dashboard">vercel.com/dashboard</a> → your project → <strong>Deployments</strong>.</li>
+    <li>Find the deployment from before your change (check the date and time).</li>
+    <li>Click the <strong>⋯</strong> menu on its right and choose <strong>Promote to Production</strong>.</li>
+    <li>Confirm. The old version is live again in under a minute.</li>
+  </ol>
+
+  <h3>The new styling doesn't show up</h3>
+  <p>Your browser is holding an old copy of the stylesheet. Press <strong>Ctrl + Shift + R</strong> (Mac: ⌘ + Shift + R). If you're on a phone, close the tab and reopen it. This is by far the most common "it didn't work" — and the site is usually fine.</p>
+
+  <h3>You pushed by accident</h3>
+  <p>Use the rollback in the section above. Don't try to rewrite history — promoting an earlier deployment is faster and safer.</p>
+
+  <h2>6. Common questions</h2>
+
+  <h3>Do I have to do anything in Namecheap?</h3>
+  <p>No. Your domain and DNS stay exactly as they are, and email keeps working. Only the website content changes.</p>
+
+  <h3>Will this affect my Zoho email?</h3>
+  <p>No. Nothing in this update touches mail settings.</p>
+
+  <h3>Can I change the wording myself afterwards?</h3>
+  <p>Yes — the homepage sentences live in <code>src/pages/home.js</code>, the service one-liners in <code>src/data/services.js</code>, and the menu and buttons in <code>src/data/site.js</code>. Edit, build, push, same as above.</p>
+
+  <h3>What if I only want to change one thing later?</h3>
+  <p>Then you don't need the zip at all. Edit that one file, run <code>npm run build</code> to confirm it's fine, then <code>git add -A && git commit -m "your note" && git push</code>.</p>
+
+  <footer class="end">
+    <p><strong>Short version, if you only remember one thing:</strong> replace the ten files → <code>npm run build</code> → <code>git add -A &amp;&amp; git commit -m "Homepage update" &amp;&amp; git push</code> → wait for Vercel to say <strong>Ready</strong> → hard refresh the site.</p>
+  </footer>
+
+</div>
+</body>
+</html>

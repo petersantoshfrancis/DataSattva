@@ -52,7 +52,7 @@ ds/
 │  │  ├─ regulatory.js     # DPDP Act/Rules content model + commencement, roles, requirements, sources
 │  │  ├─ services.js       # the 10 service pages (content for index + detail pages)
 │  │  ├─ assessment.js     # question bank + scoring model (single source of truth)
-│  │  └─ insights.js       # article content, categories
+│  │  └─ insights.js       # retired: draft article content is no longer built or linked
 │  ├─ lib/
 │  │  ├─ layout.js         # <head>, header, footer, page hero, CTA bands
 │  │  ├─ components.js     # hero SVG, framework grid, journey, service cards, roadmap, accordion
@@ -80,8 +80,7 @@ ds/
 | `/services/` | Services index |
 | `/services/<10 slugs>/` | Dedicated service pages |
 | `/readiness-assessment/` | Assessment |
-| `/insights/` | Insights index |
-| `/insights/<8 slugs>/` | Article pages |
+| `/insights/` | **Retired** — returns 410 via `vercel.json` |
 | `/contact/` | Contact |
 | `/privacy/`, `/terms/` | Legal (noindex) |
 | `/assessment-embed.html` | Single-file standalone assessment (no server, no external assets) for iframe embedding or emailing |
@@ -150,7 +149,7 @@ These items are **placeholders** in the build. Search for them in `src/data/site
 | Data Protection Officer / grievance contact | Not stated | `privacy.js` §1, §8 |
 | Hosting region / cross-border position | `[to be confirmed before launch]` | `privacy.js` §5 |
 | Governing-law jurisdiction | `[jurisdiction to be confirmed]` | `terms.js` §11 |
-| Authors and publication dates for Insights | `null` → renders "Publication date pending" / "Author to be confirmed", articles badged as draft | `insights.js` |
+| Authors and publication dates for Insights (section retired) | `null` → renders "Publication date pending" / "Author to be confirmed", articles badged as draft | `insights.js` |
 | Client names, testimonials, certifications, awards, years of experience, headcount | Deliberately absent — nothing invented | n/a |
 | Analytics / CRM / chat tooling | None installed. If added, the privacy notice must be updated | `privacy.js` §3 |
 
@@ -241,7 +240,11 @@ ENQUIRY_WEBHOOK_TOKEN=
 
 Env var changes take effect only on a **new deployment** — redeploy after editing them.
 
-### Contact form and assessment results on Vercel
+### Editing content, logo, colours and font sizes
+
+Step-by-step, file by file: `docs/content-and-brand-editing-guide.html`. The logo is a single file — `src/brand/logo.svg` — which drives the header, footer and favicon.
+
+## Contact form and assessment results on Vercel
 
 > **Plain-language guide for the live stack** (Vercel + Namecheap + Zoho Mail + ZeptoMail): `docs/zoho-mail-and-live-site-guide.html`. The technical runbook is `docs/deployment-and-editing-guide.html`.
 
@@ -311,7 +314,7 @@ Not verified here: real-device testing, screen-reader walkthrough (NVDA/JAWS/Voi
 - **Unsettled items are flagged, not asserted**: the January 2026 consultation on compressing the eighteen-month stage to twelve months is presented as an unnotified proposal; the 72-hour breach-reporting expectation is labelled practitioner practice derived from Rule 7 rather than a quoted statutory deadline.
 - **Every regulatory statement carries a category** — statutory requirement, conditional requirement, good practice or advisory recommendation — via tags on the knowledge page and in service copy.
 - **Penalty figures** are presented as Schedule ceilings with the mitigating factors the Board weighs, not as tariffs.
-- **Insights articles are labelled draft** in the interface. No author, date, client, statistic or quotation has been invented.
+- **The Insights section is retired.** The eight draft articles were removed from the build, the navigation and the sitemap on client instruction; `/insights/*` returns HTTP 410. The article source is still in `src/data/insights.js` but is no longer imported — restore the routes in `build.mjs` to bring the section back.
 - **No claims** of certification, regulatory approval, endorsement, guaranteed compliance or legal advice anywhere in the copy.
 
 If a regulatory position changes, update `src/data/regulatory.js` (and the relevant article in `insights.js`), bump `regulatoryStatus.verifiedOn` in `src/data/site.js`, and rebuild. The verification date is rendered on the knowledge page, article pages and service sidebars.

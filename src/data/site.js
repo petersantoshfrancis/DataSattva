@@ -35,7 +35,6 @@ export const nav = [
   { label: 'DPDP Act & Rules', short: 'DPDP Act', href: '/dpdp-act-and-rules/' },
   { label: 'Advisory Services', short: 'Services', href: '/services/' },
   { label: 'Readiness Assessment', short: 'Assessment', href: '/readiness-assessment/' },
-  { label: 'Insights', short: 'Insights', href: '/insights/' },
   { label: 'Contact Us', short: 'Contact', href: '/contact/' },
 ];
 
@@ -66,7 +65,6 @@ export const footer = {
         { label: 'DPDP Act & Rules', href: '/dpdp-act-and-rules/' },
         { label: 'Implementation roadmap', href: '/dpdp-act-and-rules/#implementation-framework' },
         { label: 'Implementation challenges', href: '/dpdp-act-and-rules/#challenges' },
-        { label: 'Insights', href: '/insights/' },
         { label: 'Glossary of DPDP terms', href: '/dpdp-act-and-rules/#glossary' },
       ],
     },

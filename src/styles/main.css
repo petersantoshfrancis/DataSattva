@@ -123,8 +123,8 @@ h1, h2, h3, h4, h5 {
   text-wrap: balance;
 }
 h1 { font-size: clamp(2.1rem, 1.55rem + 2.4vw, 3.5rem); letter-spacing: -0.025em; }
-h2 { font-size: clamp(1.6rem, 1.28rem + 1.35vw, 2.4rem); letter-spacing: -0.02em; }
-h3 { font-size: clamp(1.16rem, 1.06rem + 0.42vw, 1.38rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.85rem, 1.4rem + 1.8vw, 2.9rem); letter-spacing: -0.022em; }
+h3 { font-size: clamp(1.2rem, 1.08rem + 0.5vw, 1.48rem); letter-spacing: -0.01em; }
 h4 { font-size: 1.02rem; letter-spacing: 0; }
 
 p { margin: 0 0 var(--sp-4); }
@@ -200,7 +200,7 @@ button { cursor: pointer; }
 .measure-sm { max-width: 48ch; }
 
 /* Section header */
-.section-head { max-width: 62ch; margin-bottom: clamp(2rem, 1.4rem + 1.6vw, 3rem); }
+.section-head { max-width: 62ch; margin-bottom: clamp(2.1rem, 1.5rem + 1.7vw, 3.2rem); }
 .section-head--wide { max-width: 74ch; }
 .section-head--center { margin-inline: auto; text-align: center; }
 .section-head p:last-child { margin-bottom: 0; }
@@ -365,7 +365,7 @@ button { cursor: pointer; }
     radial-gradient(1100px 520px at 82% -12%, #17365e 0%, transparent 62%),
     linear-gradient(168deg, #0b1f3a 0%, #0d2340 46%, #0b1f3a 100%);
   color: rgba(255, 255, 255, 0.8);
-  padding-block: clamp(3.2rem, 2rem + 5vw, 6rem) clamp(3rem, 2rem + 4vw, 5rem);
+  padding-block: clamp(1.6rem, 1rem + 2.2vw, 2.6rem) clamp(3rem, 2rem + 4vw, 5rem);
 }
 .hero::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -399,6 +399,30 @@ button { cursor: pointer; }
 .hero-visual { position: relative; }
 .hero-visual svg { width: 100%; height: auto; filter: drop-shadow(0 26px 44px rgba(4, 12, 26, 0.45)); }
 
+/* ---------- Hero graphic band ----------
+   The diagram sits directly under the site header, above the headline, as a
+   wide band. It gives the page something to land on before the copy starts,
+   and it is the first thing that moves when the page loads. */
+.hero-visual--band {
+  margin: 0 auto clamp(1rem, 0.7rem + 1.2vw, 1.6rem);
+  max-width: 680px;
+  width: 100%;
+}
+/* Capped so the headline and its call to action still land in the first
+   screen on a laptop — the graphic leads, but it does not push the ask away. */
+.hero-visual--band svg { max-height: min(30vh, 250px); }
+
+/* Once the graphic is full width and centred, the copy below it is a single
+   readable column rather than a half-width column with empty space beside it. */
+.hero__copy { position: relative; z-index: 1; max-width: 62ch; }
+.hero__copy h1 { font-size: clamp(1.9rem, 1.35rem + 2vw, 3rem); max-width: 26ch; }
+.hero__copy .hero__lede { max-width: 58ch; }
+
+@media (max-width: 900px) {
+  .hero-visual--band { max-width: 100%; margin-bottom: var(--sp-6); }
+  .hero-visual--band svg { max-height: none; }
+}
+
 .hero-stats {
   position: relative; z-index: 1; margin-top: clamp(2.5rem, 1.6rem + 3vw, 4rem);
   padding-top: var(--sp-5); border-top: 1px solid rgba(255, 255, 255, 0.12);
@@ -414,7 +438,6 @@ button { cursor: pointer; }
 
 @media (max-width: 900px) {
   .hero__inner { grid-template-columns: 1fr; }
-  .hero-visual { order: -1; max-width: 460px; margin-inline: auto; width: 100%; }
   .hero-stats { grid-template-columns: 1fr; gap: var(--sp-3); }
   .hero-stats > * + * { padding-top: var(--sp-3); border-top: 1px solid rgba(255, 255, 255, 0.08); }
 }
@@ -474,13 +497,24 @@ button { cursor: pointer; }
 .card__kicker { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-700); font-family: var(--font-head); font-weight: 700; margin-bottom: var(--sp-2); }
 
 /* Service card (homepage grid) */
+/* Advisory service boxes. On the tinted paper section each card is a defined
+   white box with a real border and a resting shadow, so the six read as six
+   separate items rather than text floating on a page. */
 .service-card {
   position: relative; display: flex; flex-direction: column; gap: var(--sp-3);
-  background: var(--white); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg);
   padding: var(--sp-5); text-decoration: none; color: inherit;
-  transition: border-color 0.18s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.18s var(--ease), box-shadow 0.22s var(--ease), transform 0.22s var(--ease);
 }
-.service-card:hover { border-color: var(--blue-100); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.service-card::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: linear-gradient(90deg, var(--blue), var(--saffron));
+  opacity: 0; transition: opacity 0.22s var(--ease);
+}
+.service-card:hover { border-color: var(--blue-100); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+.service-card:hover::before, .service-card:focus-visible::before { opacity: 1; }
 .service-card__top { display: flex; align-items: center; gap: 0.7rem; }
 .service-card__icon {
   width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
@@ -528,17 +562,32 @@ button { cursor: pointer; }
   background: var(--white); border: 1px solid var(--line-soft); border-radius: var(--radius-xl);
   padding: clamp(1.25rem, 1rem + 1.6vw, 2.25rem); box-shadow: var(--shadow-sm);
 }
-.challenge-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line-soft); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-soft); }
-.challenge-cell { background: var(--white); padding: var(--sp-4); }
-@media (max-width: 1080px) { .challenge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 720px) { .challenge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 460px) { .challenge-grid { grid-template-columns: 1fr; } }
-.challenge-cell__num {
-  font-family: var(--font-head); font-size: 0.68rem; font-weight: 700; color: var(--blue);
-  letter-spacing: 0.1em; margin-bottom: 0.35rem;
+.framework-panel--tight { padding: clamp(1.1rem, 0.9rem + 1vw, 1.75rem); }
+
+/* Six obligations — the compressed home-page version of the framework */
+.obligation-grid {
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1px;
+  background: var(--line-soft); border: 1px solid var(--line-soft);
+  border-radius: var(--radius); overflow: hidden;
 }
-.challenge-cell h4 { font-size: 0.9rem; margin-bottom: 0.25rem; line-height: 1.35; }
-.challenge-cell p { font-size: 0.79rem; color: var(--ink-60); margin: 0; line-height: 1.5; }
+.obligation { background: var(--white); padding: 1rem 1.1rem 1.15rem; }
+.obligation__num {
+  font-family: var(--font-head); font-size: 0.68rem; font-weight: 700; color: var(--blue-700);
+  letter-spacing: 0.1em; margin: 0 0 0.45rem;
+}
+.obligation h3 {
+  font-size: 0.95rem; margin: 0 0 0.4rem; line-height: 1.25;
+  font-family: var(--font-head); font-weight: 700; color: var(--navy);
+}
+.obligation p:last-child { font-size: 0.82rem; color: var(--ink-60); margin: 0; line-height: 1.55; }
+@media (max-width: 1080px) { .obligation-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .obligation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.framework-note {
+  display: flex; gap: 0.55rem; align-items: flex-start;
+  margin: 1rem 0 0; font-size: 0.86rem; color: var(--ink-60); line-height: 1.55;
+}
+.framework-note > span:first-child { color: var(--blue); flex-shrink: 0; margin-top: 2px; }
 
 /* ---------- Journey (6 step) ---------- */
 .journey { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; position: relative; list-style: none; padding: 0; margin: 0; }
@@ -568,7 +617,20 @@ button { cursor: pointer; }
 
 /* ---------- Why / differentiators ---------- */
 .why-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: rgba(255,255,255,0.1); border-block: 1px solid rgba(255,255,255,0.1); }
-.why-item { padding: clamp(1.3rem, 1rem + 1vw, 1.9rem); background: transparent; }
+/* Same box treatment as .service-card, so every card grid on the site reads
+   the same way — on navy the box is a lifted panel rather than white paper. */
+.why-item {
+  padding: clamp(1.3rem, 1rem + 1vw, 1.9rem);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: var(--radius-lg);
+  transition: background 0.22s var(--ease), border-color 0.22s var(--ease), transform 0.22s var(--ease);
+}
+.why-item:hover {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translateY(-3px);
+}
 .why-item__icon { color: var(--saffron); margin-bottom: var(--sp-3); }
 .why-item h3 { font-size: 1rem; margin-bottom: 0.4rem; }
 .why-item p { font-size: 0.88rem; color: rgba(255,255,255,0.76); margin: 0; line-height: 1.6; }
@@ -602,6 +664,35 @@ button { cursor: pointer; }
 .assess-card__meta strong { display: block; color: #fff; font-family: var(--font-head); font-size: 1rem; }
 .disclaim { font-size: 0.755rem; line-height: 1.6; color: rgba(255,255,255,0.68); margin-top: var(--sp-4); }
 @media (max-width: 880px) { .assess-band__inner { grid-template-columns: 1fr; } }
+
+/* ---------- Assessment band, single-CTA layout ----------
+   Replaced a two-column "what you get" card with one centred invitation.
+   Reason: the page already ends in a call to action, so two panels of
+   features directly above it split attention and read as bulk. */
+.assess-band--cta { padding-block: clamp(3rem, 2rem + 4vw, 5rem); }
+.assess-cta { position: relative; z-index: 1; max-width: 780px; margin-inline: auto; text-align: center; }
+.assess-cta h2 { color: #fff; max-width: 22ch; margin-inline: auto; }
+.assess-cta__sub {
+  color: rgba(255,255,255,0.8); font-size: clamp(1rem, 0.96rem + 0.25vw, 1.1rem);
+  max-width: 58ch; margin: 0 auto var(--sp-5);
+}
+.assess-cta__actions { justify-content: center; gap: var(--sp-3); }
+.btn--lg { padding: 1.05rem 1.9rem; min-height: 54px; font-size: 0.98rem; }
+.assess-cta__facts {
+  list-style: none; padding: 0; margin: var(--sp-6) 0 0;
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 0.6rem clamp(1rem, 0.6rem + 2vw, 2.5rem);
+}
+.assess-cta__facts li {
+  display: flex; align-items: center; gap: 0.45rem; margin: 0;
+  font-size: 0.83rem; color: rgba(255,255,255,0.72);
+}
+.assess-cta__facts li svg { color: var(--saffron); flex-shrink: 0; }
+.assess-cta__facts strong { color: #fff; font-family: var(--font-head); font-size: 0.88rem; margin-right: 0.15rem; }
+.assess-cta .disclaim { max-width: 64ch; margin: var(--sp-4) auto 0; }
+@media (max-width: 560px) {
+  .assess-cta__facts { flex-direction: column; align-items: center; gap: 0.5rem; }
+  .assess-cta__facts li { justify-content: center; }
+}
 
 /* ---------- CTA closer ---------- */
 .closer {
@@ -902,6 +993,90 @@ td strong { color: var(--navy); font-weight: 600; }
 .toc a { display: block; padding: 0.42rem 0.6rem; border-radius: 5px; color: var(--ink-60); text-decoration: none; border-left: 2px solid transparent; }
 .toc a:hover { background: var(--paper); color: var(--navy); }
 .toc a[aria-current='true'] { color: var(--blue-700); border-left-color: var(--blue); background: var(--blue-050); font-weight: 600; }
+
+
+/* ---------- Home: trimmed "Why DataSattva" (3 items) ---------- */
+.why-grid--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.25rem, 0.9rem + 1.2vw, 2rem); }
+.why-grid--compact .why-item p { font-size: 0.94rem; line-height: 1.6; }
+@media (max-width: 900px) {
+  .why-grid--compact { grid-template-columns: 1fr; }
+}
+
+/* ---------- Hero diagram entrance animation ----------
+   CSS only: the static SVG stays in the HTML for search engines and for
+   anyone with JavaScript disabled. Everything here is wrapped in a
+   prefers-reduced-motion: no-preference block, so a visitor who has asked
+   their device to reduce motion sees the finished diagram immediately. */
+.hero-diagram .hv-nodes--in,
+.hero-diagram .hv-nodes--out,
+.hero-diagram .hv-core { transform-box: fill-box; transform-origin: center; }
+
+@supports (animation-name: hv-rise) {
+@media (prefers-reduced-motion: no-preference) {
+  /* 1 · core panel fades and settles */
+  .hero-diagram .hv-core {
+    opacity: 0;
+    animation: hv-rise 0.7s var(--ease) 0.1s forwards;
+  }
+  /* 2 · outer nodes step in from their sides */
+  .hero-diagram .hv-nodes--in > g {
+    opacity: 0;
+    animation: hv-in-left 0.55s var(--ease) forwards;
+  }
+  .hero-diagram .hv-nodes--out > g {
+    opacity: 0;
+    animation: hv-in-right 0.55s var(--ease) forwards;
+  }
+  .hero-diagram .hv-nodes--in > g:nth-child(1) { animation-delay: 0.30s; }
+  .hero-diagram .hv-nodes--in > g:nth-child(2) { animation-delay: 0.38s; }
+  .hero-diagram .hv-nodes--in > g:nth-child(3) { animation-delay: 0.46s; }
+  .hero-diagram .hv-nodes--in > g:nth-child(4) { animation-delay: 0.54s; }
+  .hero-diagram .hv-nodes--out > g:nth-child(1) { animation-delay: 0.62s; }
+  .hero-diagram .hv-nodes--out > g:nth-child(2) { animation-delay: 0.70s; }
+  .hero-diagram .hv-nodes--out > g:nth-child(3) { animation-delay: 0.78s; }
+  .hero-diagram .hv-nodes--out > g:nth-child(4) { animation-delay: 0.86s; }
+
+  /* 3 · connectors draw themselves once the nodes are in place */
+  .hero-diagram .hv-flow {
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    animation: hv-draw 1.05s var(--ease) 0.95s forwards;
+  }
+  .hero-diagram .hv-flow--out { animation-delay: 1.15s; }
+
+  /* 4 · slow ambient motion so the diagram feels alive after it lands */
+  .hero-diagram .hv-pulse {
+    animation: hv-pulse 3.6s ease-in-out 2s infinite;
+  }
+  .hero-diagram .hv-loop {
+    stroke-dasharray: 5 4;
+    animation: hv-march 22s linear 2s infinite;
+  }
+}
+}
+
+@keyframes hv-rise {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes hv-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes hv-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes hv-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes hv-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@keyframes hv-march {
+  to { stroke-dashoffset: -180; }
+}
 
 .reveal { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
