@@ -17,12 +17,14 @@ import 'dotenv/config';
 
 import { org, contact, brand, nav } from './src/data/site.js';
 import { services } from './src/data/services.js';
+import { insights } from './src/data/insights.js';
 
 import home from './src/pages/home.js';
 import about from './src/pages/about.js';
 import dpdp from './src/pages/dpdp.js';
 import { servicesIndex, servicePage } from './src/pages/services.js';
 import assessment from './src/pages/assessment.js';
+import { insightsIndex, insightPage } from './src/pages/insights.js';
 import contactPage from './src/pages/contact.js';
 import { assessmentEmbed } from './src/pages/assessment-embed.js';
 import privacy from './src/pages/privacy.js';
@@ -53,6 +55,7 @@ export async function build() {
     ['dpdp-act-and-rules/index.html', dpdp, '/dpdp-act-and-rules/'],
     ['services/index.html', servicesIndex, '/services/'],
     ['readiness-assessment/index.html', assessment, '/readiness-assessment/'],
+    ['insights/index.html', insightsIndex, '/insights/'],
     ['contact/index.html', contactPage, '/contact/'],
     ['privacy/index.html', privacy, '/privacy/'],
     ['terms/index.html', terms, '/terms/'],
@@ -60,6 +63,9 @@ export async function build() {
 
   for (const sv of services) {
     routes.push([`services/${sv.slug}/index.html`, () => servicePage(sv.slug), `/services/${sv.slug}/`]);
+  }
+  for (const art of insights) {
+    routes.push([`insights/${art.slug}/index.html`, () => insightPage(art.slug), `/insights/${art.slug}/`]);
   }
 
   let warnings = [];
@@ -88,10 +94,10 @@ export async function build() {
   }
 
   /* -------------------------------------------------------------- brand assets */
-  /* Brand mark: the single source of truth is src/brand/logo.svg.
-     The favicon is generated from it. To change the logo, edit that one file. */
-  const logo = await readFile(path.join(SRC, 'brand', 'logo.svg'), 'utf8');
-  await write('assets/favicon.svg', logo);
+  await write(
+    'assets/favicon.svg',
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2F80FF"/><stop offset="100%" stop-color="#0B1F3A"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#g)"/><path d="M12 26.5v-6.8M20 26.5V13M28 26.5v-9.6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M9.5 30.5h21" stroke="#FFB020" stroke-width="2.4" stroke-linecap="round"/><circle cx="20" cy="10.2" r="2.1" fill="#FFB020"/></svg>`
+  );
 
   await write(
     'assets/og-image.svg',
@@ -136,7 +142,6 @@ ${sitemapable
 </urlset>
 `;
   await write('sitemap.xml', sitemap);
-
 
   await write(
     'robots.txt',

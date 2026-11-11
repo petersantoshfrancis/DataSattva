@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { brand, nav, headerCta, footer, contact, org, ctas, legalEntityPlaceholder } from '../data/site.js';
 import { icon, brandMark } from './icons.js';
 
@@ -12,8 +14,19 @@ export const esc = (str = '') =>
 /** Absolute URL helper. */
 export const absUrl = (path = '/') => `${org.url.replace(/\/$/, '')}${path === '/' ? '/' : path}`;
 
-/** Shared head: meta, OG, JSON-LD, design-system stylesheet. */
-export function pageHead({ title, description, path = '/', jsonLd = [], noindex = false }) {
+/* The stylesheet address carries a short fingerprint of the file's contents
+   (/assets/main.css?v=1a2b3c4d). A browser that still holds the previous
+   stylesheet therefore fetches the new one as soon as a new version of the site
+   is published, instead of up to an hour later. The fingerprint is worked out
+   from src/styles/main.css on every build — there is nothing to update by hand. */
+const stylesheetHref = () => {
+  const css = readFileSync(new URL('../styles/main.css', import.meta.url));
+  return `/assets/main.css?v=${createHash('sha256').update(css).digest('hex').slice(0, 8)}`;
+};
+
+/** Shared head: meta, OG, JSON-LD, design-system stylesheet.
+ *  `headExtra` is optional markup placed straight after the stylesheet link. */
+export function pageHead({ title, description, path = '/', jsonLd = [], noindex = false, headExtra = '' }) {
   const full = path === '/' ? absUrl('/') : absUrl(path);
   const ld = [...jsonLd];
   return `<!DOCTYPE html>
@@ -40,8 +53,8 @@ ${noindex ? '<meta name="robots" content="noindex, follow">' : '<meta name="robo
 <meta name="twitter:image" content="${absUrl('/assets/og-image.svg')}">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/favicon.svg">
-<link rel="stylesheet" href="/assets/main.css">
-${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}
+<link rel="stylesheet" href="${stylesheetHref()}">
+${headExtra ? `${headExtra}\n` : ''}${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}
 </head>`;
 }
 
@@ -52,6 +65,7 @@ const currentOf = (path) => {
     .find((n) => path === n.href || path.startsWith(n.href));
   if (hit) return hit.href;
   if (path.startsWith('/services')) return '/services/';
+  if (path.startsWith('/insights')) return '/insights/';
   return '';
 };
 

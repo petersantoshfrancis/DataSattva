@@ -357,6 +357,14 @@ ${pageHero({
       </div>
       <aside>
         <div class="card aside-card">
+          <p class="card__kicker">Related reading</p>
+          <ul style="list-style:none;padding:0;margin:0.75rem 0 0;display:grid;gap:0.7rem;font-size:0.87rem">
+            <li><a href="/insights/dpdp-applicability-questions-for-indian-organisations/">Applicability: the questions to answer first</a></li>
+            <li><a href="/insights/dpdp-rules-2025-staged-commencement-what-it-means/">What the staged commencement means for planning</a></li>
+            <li><a href="/insights/building-a-processing-inventory-that-survives-contact/">Building a processing inventory that lasts</a></li>
+            <li><a href="/insights/third-party-privacy-risk-beyond-the-vendor-list/">Third-party risk as an oversight capability</a></li>
+          </ul>
+          <hr class="divider" style="margin:1.25rem 0">
           <p class="card__kicker">Test your position</p>
           <p class="small muted">The free readiness assessment gives an indicative view across twelve obligation areas in about three minutes.</p>
           <a class="btn btn--primary btn--sm btn--block mt-5" href="${ctas.assessment.href}">${ctas.assessmentShort.label}</a>

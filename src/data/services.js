@@ -10,7 +10,7 @@ export const services = [
     letter: 'A',
     title: 'DPDP Applicability & Readiness Assessment',
     short:
-      'What applies to you, from when, and what to do first.',
+      'Help organisations understand the applicability of the Act and Rules, evaluate current practices and identify potential gaps.',
     outcome: 'A clear answer on what applies to you, and a prioritised gap list you can act on.',
     icon: 'compass',
     problem:
@@ -58,7 +58,7 @@ export const services = [
     letter: 'B',
     title: 'Data Privacy Governance & Framework Development',
     short:
-      'Ownership, forums and accountability that hold.',
+      'Support the development of privacy governance structures, accountability frameworks, policies and oversight mechanisms.',
     outcome: 'Named accountability, a decision-making structure and a policy set that matches how the business actually runs.',
     icon: 'governance',
     problem:
@@ -106,7 +106,7 @@ export const services = [
     letter: 'C',
     title: 'Data Mapping & Records of Processing Activities',
     short:
-      'Know what data you hold, where it lives and why.',
+      'Help organisations identify personal data, understand processing activities and establish visibility over data flows across functions and systems.',
     outcome: 'A defensible inventory of what personal data exists, where it lives, why it is held and who can see it.',
     icon: 'map',
     problem:
@@ -154,7 +154,7 @@ export const services = [
     letter: 'D',
     title: 'Consent & Privacy Notice Frameworks',
     short:
-      'Notices people read and consent they can withdraw.',
+      'Support the review and development of consent mechanisms, privacy notices and related operational processes.',
     outcome: 'Notices people can actually read, and consent that can be evidenced purpose by purpose.',
     icon: 'consent',
     problem:
@@ -202,7 +202,7 @@ export const services = [
     letter: 'E',
     title: 'Data Principal Rights Management',
     short:
-      'Request handling that works across systems.',
+      'Support the design of processes for handling requests relating to access, correction, erasure, grievance redressal and other applicable rights.',
     outcome: 'A rights process that meets the prescribed timelines without swamping your operations team.',
     icon: 'rights',
     problem:
@@ -250,7 +250,7 @@ export const services = [
     letter: 'F',
     title: 'Third-Party Data Privacy Risk Management',
     short:
-      'Oversight of the vendors and partners who hold your data.',
+      'Help organisations understand personal data shared with vendors, processors and business partners, and establish appropriate oversight and safeguards.',
     outcome: 'Visibility and enforceable safeguards over personal data that leaves your perimeter.',
     icon: 'network',
     problem:
@@ -301,7 +301,7 @@ export const services = [
     letter: 'G',
     title: 'Data Retention & Erasure',
     short:
-      'Retention schedules and deletion you can evidence.',
+      'Support the development of data retention schedules, deletion processes and governance mechanisms.',
     outcome: 'Data kept because there is a reason, for as long as there is a reason — and deleted when there is not.',
     icon: 'retention',
     problem:
@@ -351,7 +351,7 @@ export const services = [
     letter: 'H',
     title: 'Personal Data Breach Management',
     short:
-      'A response that is rehearsed, not improvised.',
+      'Support incident response frameworks, escalation procedures, documentation and applicable notification processes.',
     outcome: 'A tested response that meets reporting expectations under pressure.',
     icon: 'shield',
     problem:
@@ -402,7 +402,7 @@ export const services = [
     letter: 'I',
     title: 'Privacy Policies, Procedures & Controls',
     short:
-      'Policies that translate into daily operating practice.',
+      'Support the development and review of privacy-related policies, procedures, operating models and controls.',
     outcome: 'A policy set that maps to obligations, and controls that produce evidence.',
     icon: 'document',
     problem:
@@ -450,7 +450,7 @@ export const services = [
     letter: 'J',
     title: 'Privacy Awareness & Organisational Enablement',
     short:
-      'Teams that recognise their part in the obligation.',
+      'Help organisations build privacy awareness and integrate data protection responsibilities into business operations.',
     outcome: 'Privacy decisions made correctly at the point of work, not escalated to a central team.',
     icon: 'people',
     problem:

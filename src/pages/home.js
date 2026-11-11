@@ -1,14 +1,47 @@
 import { pageHead, layout } from '../lib/layout.js';
-import { heroVisual, challengeFramework, journey, serviceCards } from '../lib/components.js';
+import { heroVisual, challengeTiles, journey, serviceTiles } from '../lib/components.js';
 import { icon } from '../lib/icons.js';
 import { brand, ctas, org } from '../data/site.js';
-import { services } from '../data/services.js';
+
+/*
+ * Homepage. Sections, in order:
+ *   hero · #challenge · #journey · #services · #why · #assessment
+ *
+ * Where the wording lives:
+ *   - headings, intros, "Why DataSattva" and the assessment panel ... this file
+ *   - the ten challenge tiles and the six journey steps .............. src/lib/components.js
+ *   - the ten service tiles (short heading + one line each) .......... src/lib/components.js
+ *   - button labels and their links .................................. src/data/site.js (ctas)
+ *
+ * Blocks marked `reveal` fade in as they scroll into view. The class is switched
+ * on by the small script in the page head (revealSwitch, below) and driven by
+ * src/scripts/main.js; without JavaScript everything is simply visible.
+ */
+
+/* Scroll reveal is opt-in per page. The switch goes in the <head> so that nothing
+   is hidden unless scripting is known to work. */
+const revealSwitch = `<script>
+/* Scroll reveal is switched on only when scripting works. If /assets/main.js has not started
+   shortly after load, the switch is removed again so no content can stay hidden. */
+(function (d, w) {
+  if (!('IntersectionObserver' in w)) return;
+  var root = d.documentElement;
+  root.classList.add('reveal-on');
+  w.addEventListener('load', function () {
+    w.setTimeout(function () {
+      var h = d.getElementById('site-header');
+      if (!h || !h.hasAttribute('data-scrolled')) root.classList.remove('reveal-on');
+    }, 1500);
+  });
+})(document, window);
+</script>`;
 
 const head = pageHead({
   title: 'DataSattva — DPDP Act & Rules Advisory, Readiness and Implementation Support',
   description:
     'DataSattva helps organisations understand, assess and address the Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025 through readiness assessments, privacy governance frameworks and practical implementation support. The clearer side of data.',
   path: '/',
+  headExtra: revealSwitch,
   jsonLd: [
     {
       '@context': 'https://schema.org',
@@ -26,18 +59,47 @@ const head = pageHead({
         'Third-party data privacy risk',
       ],
     },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: brand.name,
+      url: org.url,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${org.url}/insights/?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
   ],
 });
+
+/* "Why DataSattva": [icon name from src/lib/icons.js, heading, one line]. */
+const whyItems = [
+  ['scale', 'Practical interpretation', 'Regulatory text translated into decisions, not restated as commentary.'],
+  ['target', 'Risk-based and business-oriented', 'Effort goes where it changes your risk profile.'],
+  ['layers', 'Governance and controls', 'An operating model with owners and evidence, not aspirational statements.'],
+  ['eye', 'Structured gap identification', 'Evidence-based findings that are comparable, prioritised and defensible.'],
+  ['check', 'Actionable recommendations', 'Every recommendation carries an owner, an effort estimate and an output.'],
+  ['route', 'Support at every stage', 'From a first applicability conversation to assurance over a mature programme.'],
+];
+
+/* The arrow in the large assessment button, drawn slightly heavier to suit the bigger label. */
+const bigArrow = icon('arrow', 20).replace('stroke-width="1.7"', 'stroke-width="2"');
+
+/* Assessment panel: the "What you get" list. */
+const assessmentGets = [
+  'An indicative readiness score out of 100',
+  'An overall readiness category, capped where critical gaps exist',
+  'Potential Critical, High and Moderate gaps by area',
+  'Priority areas identified for further review',
+  'A downloadable summary of the result',
+  'A quick starting point for a structured readiness review',
+];
 
 const content = `
 <section class="hero">
   <div class="container">
-
-    <div class="hero-visual hero-visual--band">
-      ${heroVisual()}
-    </div>
-
-    <div class="hero__copy">
+    <div class="hero__inner">
       <div>
         <p class="eyebrow">DPDP Act &amp; Rules · India</p>
         <h1>Navigate Data Privacy with <em>Clarity</em> and Confidence.</h1>
@@ -48,6 +110,9 @@ const content = `
         </div>
         <p class="hero__tagline">${brand.tagline}</p>
         <p class="hero__note">${icon('info')}<span>DataSattva provides advisory, assessment and implementation support. We are not a law firm or a regulator, and our work does not replace independent legal advice.</span></p>
+      </div>
+      <div class="hero-visual">
+        ${heroVisual()}
       </div>
     </div>
 
@@ -68,90 +133,105 @@ const content = `
   </div>
 </section>
 
-<section class="section" id="challenge">
+<section class="section section--fade-out section--under-hero" id="challenge">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head section-head--wide reveal">
       <p class="eyebrow">The challenge</p>
-      <h2>Privacy is not a policy. It is how the organisation operates.</h2>
+      <h2>Data privacy is more than a policy. It is an organisation-wide responsibility.</h2>
+      <p class="lede">Privacy obligations do not sit in a single document or a single team. They run through how data is collected, who can see it, which vendors touch it, how long it is kept and what happens when something goes wrong.</p>
     </div>
-    ${challengeFramework()}
+    ${challengeTiles()}
+    <p class="section-bridge reveal">${icon('info')}<span>The regulatory text is the shortest part of the work. The longer part is translating each of these areas into ownership, process and evidence inside an organisation that already has other priorities.</span></p>
   </div>
 </section>
 
-<section class="section section--paper" id="journey">
+<section class="section" id="journey">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head section-head--wide reveal">
       <p class="eyebrow">Understanding your journey</p>
       <h2>Organisations are not at the same starting point — and that is expected.</h2>
       <p class="lede">A privacy programme is built in stages. Some organisations are establishing applicability for the first time; others have governance in place and need to close specific gaps. Starting with clarity about where you are is more useful than starting with urgency.</p>
     </div>
-    ${journey()}
-    <div class="card mt-7" style="display:flex;gap:var(--sp-4);align-items:flex-start;flex-wrap:wrap;">
-      <span style="color:var(--blue-700);flex-shrink:0">${icon('route', 22)}</span>
-      <div style="flex:1 1 320px">
-        <p class="small mb-0" style="color:var(--ink-70)"><strong style="color:var(--navy)">Wherever you are, the next step is the same:</strong> establish an evidence-based view of your position before committing budget to tools, policies or headcount. The <a href="/readiness-assessment/">readiness assessment</a> gives an indicative view in about three minutes; a structured review replaces that with a defensible one.</p>
-      </div>
+    ${journey(' reveal')}
+    <div class="card journey-next reveal">
+      <span class="journey-next__icon">${icon('route', 24)}</span>
+      <p><strong>Wherever you are, the next step is the same:</strong> establish an evidence-based view of your position before committing budget to tools, policies or headcount. The <a href="/readiness-assessment/">readiness assessment</a> gives an indicative view in about three minutes; a structured review replaces that with a defensible one.</p>
       <a class="btn btn--ghost btn--sm" href="/readiness-assessment/">Take the assessment ${icon('arrow')}</a>
     </div>
   </div>
 </section>
 
-<section class="section section--paper" id="services">
+<section class="section section--fade-in section--before-sheet" id="services">
   <div class="container">
-    <div class="section-head section-head--wide">
+    <div class="section-head section-head--wide reveal">
       <p class="eyebrow">Advisory services</p>
-      <h2>Ten areas of advisory, scoped to where you are.</h2>
-      <p class="lede">Each engagement ends in processes, owners and evidence — not a binder of documents.</p>
+      <h2>Ten areas of advisory, from applicability through to enablement.</h2>
+      <p class="lede">Each engagement is scoped to where you are, and leaves you with processes, owners and evidence that hold up under scrutiny.</p>
     </div>
-    ${serviceCards(services.slice(0, 6))}
-    <div class="mt-6" style="display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap;">
-      <a class="btn btn--ghost btn--sm" href="/services/">View all ten advisory services ${icon('arrow')}</a>
-      <p class="small muted mb-0">Retention, breach management, policies, and enablement are covered in the full list.</p>
-    </div>
+    ${serviceTiles()}
+    <p class="section-bridge reveal">
+      <a class="link-arrow" href="/services/">See how the services fit together ${icon('arrow')}</a>
+    </p>
   </div>
 </section>
 
-<section class="section section--navy" id="why">
+<section class="section section--navy section--sheet why" id="why">
   <div class="container">
-    <div class="section-head section-head--wide">
+    <div class="section-head reveal">
       <p class="eyebrow">Why DataSattva</p>
-      <h2>Regulatory knowledge is the starting point. Operational judgement is the work.</h2>
+      <h2>Regulatory knowledge is the starting point. <em>Operational judgement is the work.</em></h2>
+      <p class="lede">We read the Act and the Rules closely, then answer the harder question: what does this mean for the way your organisation actually operates?</p>
     </div>
-    <div class="grid grid--3 why-grid--compact">
-      <div class="why-item">
-        <div class="why-item__icon">${icon('scale', 22)}</div>
-        <h3>We say which is which</h3>
-        <p>What the Act requires, what it requires only in some circumstances, and what is good practice — stated plainly, never blurred.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-item__icon">${icon('target', 22)}</div>
-        <h3>Effort follows exposure</h3>
-        <p>Obligations are ranked by risk and dependency, so investment lands where it changes the risk profile.</p>
-      </div>
-      <div class="why-item">
-        <div class="why-item__icon">${icon('check', 22)}</div>
-        <h3>Recommendations with owners</h3>
-        <p>Every recommendation carries an owner and an anticipated output. If nobody can implement it, it is not yet a recommendation.</p>
-      </div>
+    <div class="expertise reveal">
+      <p class="expertise__label" id="expertise-label">Deep expertise in</p>
+      <ul class="expertise__list" aria-labelledby="expertise-label">
+        <li>DPDP Act, 2023 &amp; DPDP Rules, 2025</li>
+        <li>Privacy governance &amp; accountability</li>
+        <li>Enterprise &amp; third-party risk</li>
+        <li>Internal controls &amp; evidence</li>
+      </ul>
+    </div>
+    <div class="why-grid reveal reveal--stagger">
+${whyItems
+  .map(
+    ([iconName, title, body]) => `      <div class="why-item">
+        <div class="why-item__icon">${icon(iconName, 24)}</div>
+        <div>
+          <h3>${title}</h3>
+          <p>${body}</p>
+        </div>
+      </div>`
+  )
+  .join('\n')}
     </div>
   </div>
 </section>
 
-<section class="section assess-band assess-band--cta" id="assessment">
-  <div class="container assess-cta">
-    <p class="eyebrow" style="justify-content:center;">Free readiness assessment</p>
-    <h2>How ready is your organisation, really?</h2>
-    <p class="assess-cta__sub">Twelve questions, about three minutes, and an indicative score out of 100 with the gaps that matter most. No sign-up, nothing leaves your browser.</p>
-    <div class="btn-row assess-cta__actions">
-      <a class="btn btn--accent btn--lg" href="${ctas.assessmentShort.href}">${ctas.assessmentShort.label} ${icon('arrow')}</a>
-      <a class="btn btn--outline-light" href="${ctas.contact.href}">${ctas.contact.label}</a>
+<section class="section" id="assessment">
+  <div class="container">
+    <div class="cta-panel reveal">
+      <div class="cta-panel__main">
+        <p class="eyebrow">Free readiness assessment</p>
+        <h2><span>Not sure where to start?</span> See where your organisation stands on DPDP readiness.</h2>
+        <p class="lede">Every data privacy journey begins with clarity. Our free 3-minute assessment gives you an indicative view of your current practices, potential gaps and the areas that need attention.</p>
+        <div class="btn-row cta-panel__actions">
+          <a class="btn btn--accent btn--xl" href="${ctas.assessmentShort.href}"><span class="lbl-wide">${ctas.assessmentShort.label}</span><span class="lbl-narrow">Start Free Assessment</span> ${bigArrow}</a>
+          <a class="btn btn--outline-light" href="${ctas.contact.href}">${ctas.contact.label}</a>
+        </div>
+        <ul class="cta-facts" role="list">
+          <li><strong>~3 min</strong>12 questions</li>
+          <li><strong>No sign-up</strong>Scored in your browser</li>
+          <li><strong>Free</strong>No obligation</li>
+        </ul>
+      </div>
+      <div class="cta-get">
+        <p class="cta-get__title">What you get</p>
+        <ul role="list">
+${assessmentGets.map((item) => `          <li>${icon('check')}<span>${item}</span></li>`).join('\n')}
+        </ul>
+      </div>
+      <p class="cta-panel__note">The assessment provides an indicative overview and is not an exhaustive compliance evaluation, legal opinion or certification of compliance. <a href="/readiness-assessment/#how-it-works">How the scoring works</a></p>
     </div>
-    <ul class="assess-cta__facts">
-      <li>${icon('check')}<span><strong>~3 min</strong>12 questions</span></li>
-      <li>${icon('check')}<span><strong>No sign-up</strong>Scored in your browser</span></li>
-      <li>${icon('check')}<span><strong>Free</strong>No obligation</span></li>
-    </ul>
-    <p class="disclaim">Indicative only — not an exhaustive compliance evaluation, legal opinion or certification of compliance.</p>
   </div>
 </section>
 `;

@@ -1,8 +1,3 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** Inline SVG icon set. Stroke-based, 24px grid, currentColor. */
 
 const s = (paths, opts = {}) =>
@@ -49,15 +44,16 @@ export const icon = (name, size) => {
 };
 
 /** Brand mark: a "sattva" balance glyph built from a data lattice. */
-/* The logo is inlined from src/brand/logo.svg. Any `id` inside it (gradient
-   stops) gets a per-instance suffix so that a page with two marks — header and
-   footer — does not end up with duplicate ids. */
-let brandMarkCount = 0;
-export const brandMark = (cls = 'brand__mark') => {
-  const n = ++brandMarkCount;
-  return readFileSync(path.join(__dirname, '..', 'brand', 'logo.svg'), 'utf8')
-    .replace('<svg ', `<svg class="${cls}" `)
-    .replace(/id="([^"]+)"/g, (_m, id) => `id="${id}-${n}"`)
-    .replace(/url\(#([^)]+)\)/g, (_m, id) => `url(#${id}-${n})`)
-    .trim();
-};
+export const brandMark = (cls = 'brand__mark') => `
+<svg class="${cls}" viewBox="0 0 40 40" role="img" aria-label="DataSattva">
+  <defs>
+    <linearGradient id="bm-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2F80FF"/>
+      <stop offset="100%" stop-color="#0B1F3A"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.5" y="0.5" width="39" height="39" rx="10" fill="url(#bm-g)"/>
+  <path d="M12 26.5v-6.8M20 26.5V13M28 26.5v-9.6" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" opacity="0.95"/>
+  <path d="M9.5 30.5h21" stroke="#FFB020" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="20" cy="10.2" r="2.1" fill="#FFB020"/>
+</svg>`;
